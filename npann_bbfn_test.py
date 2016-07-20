@@ -29,8 +29,8 @@ if __name__ == "__main__":
     applying = Dense(20, 20)
     hidden = Dense(50, 30)
     output = Dense(30, 20, activation='softmax')
-    func = AiboPG2(30, 3, activation='none')
-    exp = AiboPG2(30, 3, activation='none')
+    func = AiboPG2(30, 2, activation='none')
+    exp = AiboPG2(30, 2, activation='none')
     function_library = [addThem, addOne]
     
     model = BBFN(applying, hidden, output, func, exp, function_library)

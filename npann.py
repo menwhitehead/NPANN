@@ -380,6 +380,7 @@ class AiboPG2(Layer):
         if (len(self.reward_table) == self.max_table_size):
             scores = np.zeros((self.weights.shape[0], self.weights.shape[1], 3))  # for each weight delta, sum up rewards for pos, 0, neg
             for i in range(len(self.reward_table)):
+                print self.reward_table[i]
                 deltas, reward = self.reward_table[i]
                 for j in range(self.weights.shape[0]):
                     for k in range(self.weights.shape[1]):
@@ -711,7 +712,8 @@ class Graph:
 # Building block function network
 class BBFN:
     
-    def __init__(self, applying, hidden, output, func, exp, function_library):
+    def __init__(self, applying, hidden, output, func, exp, function_library, seq_len=1):
+        self.sequence_length = seq_len
         self.applying_layer = applying  # layer for applying chosen function and getting result
         self.hidden_layer = hidden # layer for combining previous hidden with applying layer's result
         self.output_layer = output # layer for calculating the predicted calculation output 
@@ -738,65 +740,83 @@ class BBFN:
         #current_exp = 0 # the part of the input expression that is being focused on
         current_hidden_state = np.zeros((X.shape[0], 30))  # ??? maybe wrong size
         
+        for i in range(self.sequence_length):
         
-        
-        # THIS WILL BE LOOPED
-        
-        # Call the chosen function for each X pattern
-        function_results = np.zeros((X.shape[0], 20))
-        for i in range(len(X)):
-            function_results[i] = self.function_library[current_func_index[i]](X[i])
-        print "FUNC RESULT:", function_results
-        
-        # Take the function results and map them to an intermediate representation using a Dense layer
-        comp_result = self.applying_layer.forward(function_results)
-        print "COMP RESULT:", comp_result
-        
-        # Take the comp representation and send it (along with the previous
-        # hidden state value) into the hidden layer to generate a new hidden state
-        combined_input = np.zeros((X.shape[0], 50))
-        for i in range(len(X)):
-            combined_input[i] = np.append(current_hidden_state[i], comp_result)
+            # Call the chosen function for each X pattern
+            function_results = np.zeros((X.shape[0], 20))
+            for i in range(len(X)):
+                function_results[i] = self.function_library[current_func_index[i]](X[i])
+            print "FUNC RESULT:", function_results
+            
+            # Take the function results and map them to an intermediate representation using a Dense layer
+            comp_result = self.applying_layer.forward(function_results)
+            print "COMP RESULT:", comp_result
+            
+            # Take the comp representation and send it (along with the previous
+            # hidden state value) into the hidden layer to generate a new hidden state
+            combined_input = np.zeros((X.shape[0], 50))
+            for i in range(len(X)):
+                combined_input[i] = np.append(current_hidden_state[i], comp_result)
+    
+            current_hidden_state = self.hidden_layer.forward(combined_input)
+            print "NEW HIDDEN:", current_hidden_state
+    
+    
+            # Given the hidden state, now generate 3 values:
+            #   A calculation output (the networ's predicted result of the calculation)
+            #   A new function index (the next fuction to be called)
+            #   A new expression mask (the part of the input expression to be focused upon) NOT YET IMPLEMENTED
+            calc_output = self.output_layer.forward(current_hidden_state)
+            print "CALC OUTPUT:", calc_output
+            
+            func_output = self.function_layer.forward(current_hidden_state)
+            
+            for i in range(len(func_output)):
+                mx = float(np.max(func_output[i]))
+                ind = list(func_output[i]).index(mx)
+                current_func_index[i] = ind
 
-        current_hidden_state = self.hidden_layer.forward(combined_input)
-        print "NEW HIDDEN:", current_hidden_state
+            print "NEW FUNC IND", current_func_index
+            print "FUNC IND OUTPUT:", func_output
+            
+            # expression_output = self.expression_layer.forward(current_hidden_state)
+            # print "EXP OUTPUT:", expression_output
 
-
-        # Given the hidden state, now generate 3 values:
-        #   A calculation output (the networ's predicted result of the calculation)
-        #   A new function index (the next fuction to be called)
-        #   A new expression mask (the part of the input expression to be focused upon) NOT YET IMPLEMENTED
-        calc_output = self.output_layer.forward(current_hidden_state)
-        print "CALC OUTPUT:", calc_output
-        
-        func_output = self.function_layer.forward(current_hidden_state)
-        print "FUNC IND OUTPUT:", func_output
-        
-        expression_output = self.expression_layer.forward(current_hidden_state)
-        print "EXP OUTPUT:", expression_output
-
-
-
-
-        
-        
-        curr_x = X
-        for i in range(len(self.layers)):
-            curr_x = self.layers[i].forward(curr_x)
-        return curr_x
+        return calc_output
+    
     
     def backward(self, output, target):
         self.loss = self.loss_layer.calculateLoss(output, target)
         curr_grad = self.loss_layer.calculateGrad(output, target)
+        
+        print "STARTING GRAD:", curr_grad
 
-        for i in range(len(self.layers)-1, -1, -1):
-            curr_grad = self.layers[i].backward(curr_grad)
+        for i in range(self.sequence_length):  
+            curr_grad = self.output_layer.backward(curr_grad)
+            print "GRAD AFTER OUTPUT:", curr_grad
             
-        return curr_grad
+            curr_grad = self.hidden_layer.backward(curr_grad)
+            print "GRAD AFTER HIDDEN:", curr_grad
+            
+            # split the grad to the two incoming lines
+            hidden_grad, func_calc_grad = np.split(curr_grad, [30], axis=1)
+            print "HIDDEN_GRAD:", hidden_grad
+            print "FUNCCALC_GRAD:", func_calc_grad
+            
+            func_calc_grad = self.applying_layer.backward(func_calc_grad)
+            print "AFTER APPLYING:", func_calc_grad
+
+            # Need to figure out what to do here...
+            # func_calc_grad's size doesn't match the function_indexing output
+
+            
+        return func_calc_grad
     
     def update(self):
-        for layer in self.layers:
-            layer.update()
+        self.applying_layer.update()
+        self.hidden_layer.update()
+        self.output_layer.update()
+        self.function_layer.update()
 
     def iterate(self, X, y):
         output = self.forward(X)
