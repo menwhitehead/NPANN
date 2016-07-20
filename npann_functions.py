@@ -77,6 +77,21 @@ def loadXOR():
     return X, y
 
 
+def loadAddition(number_problems=1000, max_number=10):
+    xs = []
+    ys = []
+    for i in range(number_problems):
+        operand1 = random.randrange(max_number)
+        operand2 = random.randrange(max_number)
+        xs.append(np.append(convertToOneHot(operand1, max_number), convertToOneHot(operand2, max_number)))
+        ys.append(convertToOneHot(operand1 + operand2, max_number * 2))
+    X = np.array(xs)
+    y = np.array(ys)
+
+    return X, y
+
+
+
 def loadBreastCancer():
     size = 263
     f = h5py.File("breast_cancer.hdf5", 'r')
