@@ -133,8 +133,9 @@ class BBFN:
                 
             if verbose:
                 #print "Epoch #%d, Error: %.8f" % (i, epoch_err)
-                acc = self.accuracy(X, y)
-                print "Epoch #%d\tError: %.4f\tAccuracy: %5.1f%%" % (i, epoch_err, acc)
+                if i % 5 == 0:
+                    acc = self.accuracy(X, y)
+                    print "Epoch #%d\tError: %.4f\tAccuracy: %5.1f%%" % (i, epoch_err, acc)
             
             
     def accuracy(self, X, y):

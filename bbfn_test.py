@@ -42,8 +42,10 @@ if __name__ == "__main__":
 
     X, y = loadAddition(1000, 10)
     minibatch_size = 1
-    epochs = 50000
+    epochs = 10000
 
     model.train(X, y, minibatch_size, epochs, verbose=True)
-    #output = ann.forward(X)
+    # output = model.forward(X)
+    # for i in range(len(output)):
+    #     print output[i], y[i]
 
