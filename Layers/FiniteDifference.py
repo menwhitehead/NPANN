@@ -1,3 +1,5 @@
+from misc_functions import *
+from Layer import Layer
 
 
 class FiniteDifference(Layer):

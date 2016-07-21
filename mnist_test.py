@@ -1,8 +1,7 @@
-import numpy as np
-import h5py
-import random
-from npann_functions import *
-from npann import *
+from misc_functions import *
+from Layers.Dense import Dense
+from Models.Sequential import Sequential
+from Losses.CategoricalCrossEntropy import CategoricalCrossEntropy
 
 
 if __name__ == "__main__":
@@ -22,7 +21,7 @@ if __name__ == "__main__":
     
     number_epochs = 1000
     accuracy_report_freq = 5
-    minibatch_size = 100
+    minibatch_size = 10
 
     for i in range(number_epochs / accuracy_report_freq):
         ann.train(X, y, minibatch_size, accuracy_report_freq)

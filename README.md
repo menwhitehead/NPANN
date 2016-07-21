@@ -1,2 +1,2 @@
-# NPANN
+# NPANN (NumPy Artificial Neural Network)
 Work in progress...

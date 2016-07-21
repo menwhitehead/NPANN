@@ -2,8 +2,11 @@ from misc_functions import *
 from Layer import Layer
 
 # Global for now...
+# learning_rate = 0.9   # XOR
+# learning_rate = 0.001 # MNIST
+# learning_rate = 0.05  # Cancer
 momentum = 0.9
-learning_rate = 0.1 # Cancer REINFORCE
+learning_rate = 0.001 
 
 class Dense(Layer):
     
@@ -29,5 +32,7 @@ class Dense(Layer):
         
     def update(self):
         #self.incoming_grad *= 1.0 / np.sqrt(self.rmsgrads)
-        self.prev_update = momentum * self.prev_update + (self.incoming_acts.T.dot(self.outgoing_grad)) * learning_rate
+        mterm = momentum * self.prev_update
+        actgrad = self.incoming_acts.T.dot(self.outgoing_grad)
+        self.prev_update =  mterm + actgrad * learning_rate
         self.weights += self.prev_update
