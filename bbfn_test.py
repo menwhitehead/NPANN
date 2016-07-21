@@ -1,8 +1,6 @@
-import numpy as np
-import h5py
-import random
 from npann_functions import *
-from npann import *
+from Models.Graph import Graph
+from Layers.Dense import Dense
 
 # get an array with two 1-hot operands (representing integers) packed in
 # add 'em and return a 1-hot result
@@ -43,9 +41,8 @@ if __name__ == "__main__":
     print X.shape
     print y.shape
     minibatch_size = 1
-    epochs_per_chunk = 100
-    number_epochs = 50000
+    epochs = 50000
 
-    model.train(X, y, minibatch_size, epochs_per_chunk, verbose=False)
+    model.train(X, y, minibatch_size, epochs, verbose=False)
     #output = ann.forward(X)
 

@@ -1,9 +1,6 @@
-import numpy as np
-import h5py
-import random
 from npann_functions import *
-from npann import *
-
+from Models.Graph import Graph
+from Layers.Dense import Dense
 
 if __name__ == "__main__":
     ann = Graph()

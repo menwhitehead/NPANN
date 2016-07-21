@@ -136,6 +136,24 @@ def loadMNIST():
     return X, y
 
 
+
+
+activations = {'sigmoid':sigmoid,
+               'relu':relu,
+               'softmax':softmax,
+               'tanh':tanh,
+               'none':lambda(x):x}
+dactivations = {'sigmoid':dsigmoid,
+                'relu':drelu,
+                'softmax':lambda(x):x,
+                'tanh':dtanh,
+                'none':lambda(x):x}
+weight_inits = {'glorot_normal':glorotNormalWeights,
+                'glorot_uniform':glorotUniformWeights,
+                'normal':normalWeights,
+                'zeros':zeroWeights}
+
+
 if __name__ == "__main__":
     x = 0.5 - np.random.rand(10)
     print x
