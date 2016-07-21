@@ -79,7 +79,7 @@ def loadXOR():
     return X, y
 
 
-def loadAddition(number_problems=1000, max_number=10):
+def loadAddition(number_problems=100, max_number=10):
     xs = []
     ys = []
     for i in range(number_problems):

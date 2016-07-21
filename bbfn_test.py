@@ -1,6 +1,10 @@
-from npann_functions import *
-from Models.Graph import Graph
+from misc_functions import *
+from Models.BBFN import BBFN
 from Layers.Dense import Dense
+from Layers.AiboPG import *
+from Losses.CategoricalCrossEntropy import CategoricalCrossEntropy
+
+
 
 # get an array with two 1-hot operands (representing integers) packed in
 # add 'em and return a 1-hot result
@@ -29,20 +33,17 @@ if __name__ == "__main__":
     output = Dense(30, 20, activation='softmax')
     func = AiboPG2(30, 2, activation='none')
     exp = AiboPG2(30, 2, activation='none')
-    function_library = [addThem, addOne]
+    function_library = [addThem] #[addThem, addOne]
     
     model = BBFN(applying, hidden, output, func, exp, function_library)
   
     # ann.addLoss(MSE())
     model.addLoss(CategoricalCrossEntropy())
 
-
-    X, y = loadAddition()
-    print X.shape
-    print y.shape
+    X, y = loadAddition(1000, 10)
     minibatch_size = 1
     epochs = 50000
 
-    model.train(X, y, minibatch_size, epochs, verbose=False)
+    model.train(X, y, minibatch_size, epochs, verbose=True)
     #output = ann.forward(X)
 

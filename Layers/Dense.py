@@ -5,8 +5,10 @@ from Layer import Layer
 # learning_rate = 0.9   # XOR
 # learning_rate = 0.001 # MNIST
 # learning_rate = 0.05  # Cancer
+# learning_rate = 0.1  # BBFN
+
 momentum = 0.9
-learning_rate = 0.001 
+learning_rate = 0.01 
 
 class Dense(Layer):
     
