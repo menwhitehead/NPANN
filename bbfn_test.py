@@ -1,6 +1,6 @@
 from misc_functions import *
 from Models.BBFN import BBFN
-from Layers.Dense import Dense
+from Layers.Dense import RecurrentDense
 from Layers.AiboPG import *
 from Losses.CategoricalCrossEntropy import CategoricalCrossEntropy
 
@@ -26,16 +26,20 @@ def addOne(packed_operands):
     z = convertToOneHot(z, len(packed_operands))
     return z
 
+
+
+
+
 if __name__ == "__main__":
     
-    applying = Dense(20, 20)
-    hidden = Dense(50, 30)
-    output = Dense(30, 20, activation='softmax')
+    applying = RecurrentDense(20, 20, learning_rate=0.01)
+    hidden = RecurrentDense(50, 30, learning_rate=0.01)
+    output = RecurrentDense(30, 20, learning_rate=0.01, activation='softmax')
     func = AiboPG2(30, 2, activation='none')
     exp = AiboPG2(30, 2, activation='none')
-    function_library = [addThem] #[addThem, addOne]
+    function_library = [addThem, addOne]
     
-    model = BBFN(applying, hidden, output, func, exp, function_library)
+    model = BBFN(applying, hidden, output, func, exp, function_library, sequence_length=2)
   
     # ann.addLoss(MSE())
     model.addLoss(CategoricalCrossEntropy())

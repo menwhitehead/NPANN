@@ -4,8 +4,8 @@ from misc_functions import *
 # Building block function network
 class BBFN:
     
-    def __init__(self, applying, hidden, output, func, exp, function_library, seq_len=1):
-        self.sequence_length = seq_len
+    def __init__(self, applying, hidden, output, func, exp, function_library, sequence_length=1):
+        self.sequence_length = sequence_length
         self.applying_layer = applying  # layer for applying chosen function and getting result
         self.hidden_layer = hidden # layer for combining previous hidden with applying layer's result
         self.output_layer = output # layer for calculating the predicted calculation output 
@@ -79,9 +79,62 @@ class BBFN:
         self.loss = self.loss_layer.calculateLoss(output, target)
         curr_grad = self.loss_layer.calculateGrad(output, target)
         
-        for i in range(self.sequence_length):  
+        
+        # Do one starting pass (because it's different)
+        #  - No incoming gradient from a future hidden layer (there are no future ones!)
+        #  - function_layer and expression_layer are not adjusted
+        curr_grad = self.output_layer.backward(curr_grad)
+        # print "GRAD AFTER OUTPUT:", curr_grad
+        
+        curr_grad = self.hidden_layer.backward(curr_grad)
+        # print "GRAD AFTER HIDDEN:", curr_grad
+        
+        # split the grad to the two incoming lines
+        future_hidden_grad, curr_grad = np.split(curr_grad, [30], axis=1)
+        # print "HIDDEN_GRAD:", future_hidden_grad
+        # print "FUNCCALC_GRAD:", func_calc_grad
+        
+        curr_grad = self.applying_layer.backward(curr_grad)
+        
+        
+
+        
+        # Once the starting pass is done...
+        #   The future_hidden_grad should be set
+        #   The func_calc_grad should be set
+        #   function_layer and expression_layer can now be backpropped
+        #   (but their gradients do not go any further!)
+        for i in range(self.sequence_length-1):
+
+            # print curr_grad
+            grad_for_func = np.array([np.mean(curr_grad, axis=1)])
+            # print grad_for_func
+            grad_for_func = np.repeat(grad_for_func, self.function_layer.weights.shape[1], axis=0).T
+            # print grad_for_func
+            # sys.exit()
+
+            # Update the function index-choosing layer
+            func_grad = self.function_layer.backward(grad_for_func)
+           
+            # update the calculation output layer
             curr_grad = self.output_layer.backward(curr_grad)
+            
+            # combine the output
+            #curr_grad = (curr_grad + func_grad) / 2.0
+            
             # print "GRAD AFTER OUTPUT:", curr_grad
+            
+            # Need to combine curr_grad (from the main line)
+            # along with the future_hidden_grad coming in from the hidden state transitions
+            # print curr_grad.shape
+            # print future_hidden_grad.shape
+            #sys.exit()
+            # average the gradients???
+            curr_grad = (curr_grad + future_hidden_grad + func_grad) / 3.0
+            # print combined_grad
+            # sys.exit()
+            
+            
             
             curr_grad = self.hidden_layer.backward(curr_grad)
             # print "GRAD AFTER HIDDEN:", curr_grad
@@ -98,7 +151,7 @@ class BBFN:
             # func_calc_grad's size doesn't match the function_indexing output
 
             
-        return func_calc_grad
+        return curr_grad
     
     def update(self):
         self.applying_layer.update()
