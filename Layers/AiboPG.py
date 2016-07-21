@@ -1,5 +1,5 @@
-
-
+from misc_functions import *
+from Layer import Layer
 
 class AiboPG(Layer):
     
@@ -154,11 +154,10 @@ class AiboPG2(Layer):
         
         
     def update(self):
-
         if (len(self.reward_table) == self.max_table_size):
             scores = np.zeros((self.weights.shape[0], self.weights.shape[1], 3))  # for each weight delta, sum up rewards for pos, 0, neg
             for i in range(len(self.reward_table)):
-                print self.reward_table[i]
+                #print self.reward_table[i]
                 deltas, reward = self.reward_table[i]
                 for j in range(self.weights.shape[0]):
                     for k in range(self.weights.shape[1]):

@@ -1,5 +1,9 @@
+from misc_functions import *
+from Layer import Layer
 
-
+# Global for now...
+momentum = 0.9
+learning_rate = 0.1 # Cancer REINFORCE
 
 class Dense(Layer):
     

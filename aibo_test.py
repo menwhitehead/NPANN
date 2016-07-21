@@ -1,8 +1,8 @@
-import numpy as np
-import h5py
-import random
-from npann_functions import *
-from npann import *
+from misc_functions import *
+from Layers.Dense import Dense
+from Layers.AiboPG import *
+from Models.Sequential import Sequential
+from Losses.MSE import MSE
 
 
 if __name__ == "__main__":
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     # sys.exit(1)
     X, y = loadBreastCancer() #loadXOR()
     minibatch_size = 4
-    epochs_per_chunk = 1000
+    epochs_per_chunk = 100
     number_epochs = 50000
 
     for epoch in range(number_epochs / epochs_per_chunk):

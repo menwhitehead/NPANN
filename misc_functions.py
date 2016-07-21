@@ -3,6 +3,8 @@ import h5py
 import math
 import random
 
+DATASETS_DIR = "Datasets/"
+
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
@@ -94,7 +96,7 @@ def loadAddition(number_problems=1000, max_number=10):
 
 def loadBreastCancer():
     size = 263
-    f = h5py.File("breast_cancer.hdf5", 'r')
+    f = h5py.File(DATASETS_DIR + "breast_cancer.hdf5", 'r')
     X = f['data']['data'][:].T[:size]
     # np.array([f['t_train'][:size]]).T
     y = np.array([f['data']['label'][:size]]).T
@@ -114,7 +116,7 @@ def loadBreastCancer():
 
 def loadMNIST():
     size = 50000
-    f = h5py.File("mnist.hdf5", 'r')
+    f = h5py.File(DATASETS_DIR + "mnist.hdf5", 'r')
     X = f['x_train'][:size]
     
     maxes = X.max(axis=0)
