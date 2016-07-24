@@ -31,23 +31,24 @@ def addOne(packed_operands):
 
 
 if __name__ == "__main__":
-    
-    applying = RecurrentDense(20, 20, learning_rate=0.01)
-    hidden = RecurrentDense(50, 30, learning_rate=0.01)
-    output = RecurrentDense(30, 20, learning_rate=0.01, activation='softmax')
-    func = AiboPG2(30, 2, activation='none')
-    exp = AiboPG2(30, 2, activation='none')
-    function_library = [addThem, addOne]
-    
-    model = BBFN(applying, hidden, output, func, exp, function_library, sequence_length=2)
-  
-    # ann.addLoss(MSE())
-    model.addLoss(CategoricalCrossEntropy())
-
-    X, y = loadAddition(1000, 10)
+    lr = 0.005   # 0.05 worked instantly!
+    operand_size = 3
+    hidden_size = 3
+    dataset_size = 1000
     minibatch_size = 1
     epochs = 10000
+    
+    # function_library = [addThem, addOne, addOne, addOne, addOne, addOne, addOne]
+    function_library = [addThem, addOne]
+    applying = RecurrentDense(2*operand_size, 2*operand_size, learning_rate=lr, activation='sigmoid')
+    hidden = RecurrentDense(hidden_size + 2*operand_size, hidden_size, learning_rate=lr)
+    output = RecurrentDense(hidden_size, 2*operand_size, learning_rate=lr, activation='softmax')
+    func = AiboPGRecurrent(hidden_size, len(function_library), activation='none')
+    exp = AiboPGRecurrent(hidden_size, 2, activation='none')
+    model = BBFN(applying, hidden, output, func, exp, function_library, sequence_length=2)
+    model.addLoss(CategoricalCrossEntropy())
 
+    X, y = loadAddition(dataset_size, operand_size)
     model.train(X, y, minibatch_size, epochs, verbose=True)
     # output = model.forward(X)
     # for i in range(len(output)):

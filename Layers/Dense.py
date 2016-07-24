@@ -3,7 +3,12 @@ from Layer import Layer
 
 class Dense(Layer):
     
-    def __init__(self, number_incoming, number_outgoing, activation='sigmoid', weight_init='glorot_uniform', learning_rate=0.01, momentum=0.9):
+    def __init__(self, number_incoming,
+                 number_outgoing,
+                 activation='sigmoid',
+                 weight_init='glorot_uniform',
+                 learning_rate=0.01,
+                 momentum=0.9):
         self.activation_func = activations[activation]
         self.dactivation_func = dactivations[activation]
         self.weights = weight_inits[weight_init](number_incoming, number_outgoing)
@@ -38,7 +43,13 @@ class Dense(Layer):
 # Update averages weight changes from all the gradient passes
 class RecurrentDense(Layer):
     
-    def __init__(self, number_incoming, number_outgoing, activation='sigmoid', weight_init='glorot_uniform', learning_rate=0.01, momentum=0.9):
+    def __init__(self,
+                 number_incoming,
+                 number_outgoing,
+                 activation='sigmoid',
+                 weight_init='glorot_uniform',
+                 learning_rate=0.01,
+                 momentum=0.9):
         self.activation_func = activations[activation]
         self.dactivation_func = dactivations[activation]
         self.weights = weight_inits[weight_init](number_incoming, number_outgoing)
@@ -87,6 +98,7 @@ class RecurrentDense(Layer):
         ave_update = self.weight_update / self.forward_count
         self.prev_update =  mterm + ave_update * self.learning_rate
         self.weights += self.prev_update
+        self.reset()
         
         
         
