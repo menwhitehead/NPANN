@@ -28,6 +28,7 @@ class BBFN:
         
     # Feedforward the length of the pre-defined sequence
     def forward(self, X):
+        # print "\n\n"
         # print X.shape
         # the function index for the current training step (one for each minibatch pattern)
         current_func_output = np.zeros((len(X), len(self.function_library))) # These are the function index activations
@@ -37,17 +38,21 @@ class BBFN:
         current_hidden_state = np.zeros((X.shape[0], self.hidden_layer.weights.shape[1]))  # ??? maybe wrong size
         
         for s in range(self.sequence_length):
-        
+            # print "\n"
+            current_func_output = self.function_layer.forward(current_hidden_state)
+            current_func_index = np.argmax(current_func_output, axis=1)
+            # print "(%d,%s)" % (s, str(current_func_index)), 
+            
             # Call the chosen function for each X pattern
             function_results = np.zeros((X.shape[0], X.shape[1]))
             for i in range(len(X)):
                 function_results[i] = self.function_library[current_func_index[i]](X[i])
-            # print "FUNC RESULT:", function_results
+            # print "FUNC RESULT:", function_results, "from function @ index: ", current_func_index
             
             # Combine the function call result along with the index of the function that was called
             # This makes it so that the network knows which function was called during the last step
             combined_input = np.hstack((function_results, current_func_output))
-
+            # print "COMBi INPUT:", combined_input
             
             # Take the function results and map them to an intermediate representation using a Dense layer
             comp_result = self.applying_layer.forward(function_results)
@@ -57,7 +62,7 @@ class BBFN:
             # hidden state value) into the hidden layer to generate a new hidden state
             combined_input = np.hstack((current_hidden_state, comp_result))
             current_hidden_state = self.hidden_layer.forward(combined_input)
-            # print "NEW HIDDEN:", current_hidden_state
+            # print "NEW  HIDDEN:", current_hidden_state
     
     
             # Given the hidden state, now generate 3 values:
@@ -67,16 +72,16 @@ class BBFN:
             calc_output = self.output_layer.forward(current_hidden_state)
             # print "CALC OUTPUT:", calc_output
             
-            current_func_output = self.function_layer.forward(current_hidden_state)
-            current_func_index = np.argmax(current_func_output, axis=1)
+            # current_func_output = self.function_layer.forward(current_hidden_state)
+            # current_func_index = np.argmax(current_func_output, axis=1)
             
             # for i in range(len(func_output)):
             #     mx = float(np.max(func_output[i]))
             #     ind = list(func_output[i]).index(mx)
             #     current_func_index[i] = ind
 
-            # print "NEW FUNC IND", current_func_index
-            print current_func_index, 
+            # print "NEW FUNCIND:", current_func_index
+            # print current_func_index, 
             # print "FUNC IND OUTPUT:", func_output
             
             # expression_output = self.expression_layer.forward(current_hidden_state)
@@ -106,7 +111,7 @@ class BBFN:
         # print "GRAD AFTER HIDDEN:", curr_grad
         
         # split the grad to the two incoming lines
-        future_hidden_grad, curr_grad = np.split(curr_grad, [self.hidden_layer.weights.shape[1]], axis=1)
+        curr_hidden_grad, curr_grad = np.split(curr_grad, [self.hidden_layer.weights.shape[1]], axis=1)
         # print "HIDDEN_GRAD:", future_hidden_grad
         # print "FUNCCALC_GRAD:", func_calc_grad
         
@@ -122,15 +127,18 @@ class BBFN:
         #   (but their gradients do not go any further!)
         for i in range(self.sequence_length-1):
 
-            # print curr_grad
+            ###########################################
+            # Function-Choosing
             grad_for_func = np.array([np.mean(curr_grad, axis=1)])
             # print grad_for_func
             grad_for_func = np.repeat(grad_for_func, self.function_layer.weights.shape[1], axis=0).T
             # print grad_for_func
-            # sys.exit()
 
             # Update the function index-choosing layer
             func_grad = self.function_layer.backward(grad_for_func)
+            ###########################################
+            
+            
            
             # update the calculation output layer
             curr_grad = self.output_layer.backward(curr_grad)
@@ -142,22 +150,21 @@ class BBFN:
             
             # Need to combine curr_grad (from the main line)
             # along with the future_hidden_grad coming in from the hidden state transitions
-            # print curr_grad.shape
-            # print future_hidden_grad.shape
-            #sys.exit()
+
             # average the gradients???
-            curr_grad = (curr_grad + future_hidden_grad + func_grad) / 3.0
+            #curr_grad = (curr_grad + future_hidden_grad + func_grad) / 3.0
+            curr_grad = (curr_grad + curr_hidden_grad) / 2.0
             # print combined_grad
             
-            curr_grad = self.hidden_layer.backward(curr_grad)
+            curr_hidden_grad = self.hidden_layer.backward(curr_hidden_grad)
             # print "GRAD AFTER HIDDEN:", curr_grad
             
             # split the grad to the two incoming lines
-            hidden_grad, func_calc_grad = np.split(curr_grad, [self.hidden_layer.weights.shape[1]], axis=1)
+            curr_hidden_grad, func_calc_grad = np.split(curr_hidden_grad, [self.hidden_layer.weights.shape[1]], axis=1)
             # print "HIDDEN_GRAD:", hidden_grad
             # print "FUNCCALC_GRAD:", func_calc_grad
             
-            func_calc_grad = self.applying_layer.backward(func_calc_grad)
+            curr_grad = self.applying_layer.backward(func_calc_grad)
             # print "AFTER APPLYING:", func_calc_grad
 
             # Need to figure out what to do here...

@@ -26,20 +26,28 @@ def addOne(packed_operands):
     z = convertToOneHot(z, len(packed_operands))
     return z
 
+# get an array with two 1-hot operands (representing integers) packed in
+# and add 1 to the first operand
+def randomResult(packed_operands):
+    x, y = packed_operands[:len(packed_operands)/2], packed_operands[len(packed_operands)/2:]
+    z = random.randrange(len(packed_operands))
+    z = convertToOneHot(z, len(packed_operands))
+    return z
+
 
 
 
 
 if __name__ == "__main__":
-    lr = 0.005   # 0.05 worked instantly!
-    operand_size = 3
-    hidden_size = 3
+    lr = 0.03   # 0.05 worked instantly!
+    operand_size = 30
+    hidden_size = 40
     dataset_size = 1000
     minibatch_size = 1
     epochs = 10000
     
     # function_library = [addThem, addOne, addOne, addOne, addOne, addOne, addOne]
-    function_library = [addThem, addOne]
+    function_library = [addThem, randomResult, randomResult, randomResult]
     applying = RecurrentDense(2*operand_size, 2*operand_size, learning_rate=lr, activation='sigmoid')
     hidden = RecurrentDense(hidden_size + 2*operand_size, hidden_size, learning_rate=lr)
     output = RecurrentDense(hidden_size, 2*operand_size, learning_rate=lr, activation='softmax')

@@ -90,6 +90,10 @@ def loadAddition(number_problems=100, max_number=10):
     X = np.array(xs)
     y = np.array(ys)
 
+    # for i in range(len(X)):
+    #     print X[i],
+    #     print y[i]
+
     return X, y
 
 
