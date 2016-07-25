@@ -72,6 +72,26 @@ def convertToOneHot(val, size):
     x[val] = 0.9
     return x
 
+def convertToBinary(val, size):
+    x = np.zeros(size)
+    bin_rep = bin(val)[2:]  # get a binary string
+    # print bin_rep
+    start_ind = size - len(bin_rep)
+    for i in range(len(bin_rep)):
+        if int(bin_rep[i]) == 1:
+            x[i+start_ind] = 1.0
+    return x
+
+def binaryToInt(binary):
+    bin_str = ''
+    for val in binary:
+        if val == 1.0:
+            bin_str += '1'
+        else:
+            bin_str += '0'
+    print bin_str
+    return int(bin_str, 2)
+
 
 def loadXOR():
     X = np.array([ [0,0,1],[0,1,1],[1,0,1],[1,1,1] ])
@@ -85,8 +105,11 @@ def loadAddition(number_problems=100, max_number=10):
     for i in range(number_problems):
         operand1 = random.randrange(max_number)
         operand2 = random.randrange(max_number)
-        xs.append(np.append(convertToOneHot(operand1, max_number), convertToOneHot(operand2, max_number)))
-        ys.append(convertToOneHot(operand1 + operand2, max_number * 2))
+        # xs.append(np.append(convertToOneHot(operand1, max_number), convertToOneHot(operand2, max_number)))
+        # ys.append(convertToOneHot(operand1 + operand2, max_number * 2))
+        xs.append(np.append(convertToBinary(operand1, max_number), convertToBinary(operand2, max_number)))
+        ys.append(convertToBinary(operand1 + operand2, max_number * 2))
+        #print operand1, operand2, operand1 + operand2
     X = np.array(xs)
     y = np.array(ys)
 

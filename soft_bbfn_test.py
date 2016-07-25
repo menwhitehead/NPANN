@@ -1,8 +1,8 @@
 from misc_functions import *
-from Models.BBFN import BBFN
+from Models.SoftBBFN import SoftBBFN
 from Layers.Dense import RecurrentDense
 from Layers.AiboPG import *
-from Losses.CategoricalCrossEntropy import CategoricalCrossEntropy
+from Losses.MSE import MSE
 
 
 
@@ -39,21 +39,26 @@ def randomResult(packed_operands):
 if __name__ == "__main__":
     lr = 0.05   # 0.05 worked instantly!
     operand_size = 8
-    hidden_size = 24
-    dataset_size = 10000
-    minibatch_size = 1
-    epochs = 10000
+
+    applying_size = 10
+    hidden_size = 9
     
+    dataset_size = 2
+    minibatch_size = 2
+    epochs = 10000
+
     # function_library = [addThem, addOne, addOne, addOne, addOne, addOne, addOne]
     function_library = [addThem, randomResult, randomResult, randomResult]
-    applying = RecurrentDense(2*operand_size, 2*operand_size, learning_rate=lr, activation='sigmoid')
-    hidden = RecurrentDense(hidden_size + 2*operand_size, hidden_size, learning_rate=lr)
-    #output = RecurrentDense(hidden_size, 2*operand_size, learning_rate=lr, activation='softmax')
+    
+    applying_input_size = len(function_library) * (operand_size + 1) * 2
+    hidden_input_size = hidden_size + len(function_library) * (operand_size) * 2
+
+    applying = RecurrentDense(applying_input_size, applying_size, learning_rate=lr)
+
+    hidden = RecurrentDense(hidden_input_size, hidden_size, learning_rate=lr)
     output = RecurrentDense(hidden_size, 2*operand_size, learning_rate=lr, activation='sigmoid')
-    func = AiboPGRecurrent(hidden_size, len(function_library), activation='none')
-    exp = AiboPGRecurrent(hidden_size, 2, activation='none')
-    model = BBFN(applying, hidden, output, func, exp, function_library, sequence_length=2)
-    model.addLoss(CategoricalCrossEntropy())
+    model = SoftBBFN(hidden, output, function_library, sequence_length=2)
+    model.addLoss(MSE())
 
     X, y = loadAddition(dataset_size, operand_size)
     #print X, y
@@ -61,4 +66,8 @@ if __name__ == "__main__":
     # output = model.forward(X)
     # for i in range(len(output)):
     #     print output[i], y[i]
+
+
+
+
 
