@@ -89,7 +89,7 @@ def binaryToInt(binary):
             bin_str += '1'
         else:
             bin_str += '0'
-    print bin_str
+    # print bin_str
     return int(bin_str, 2)
 
 

@@ -37,27 +37,29 @@ def randomResult(packed_operands):
 
 
 if __name__ == "__main__":
-    lr = 0.05   # 0.05 worked instantly!
-    operand_size = 8
-
-    applying_size = 10
-    hidden_size = 9
+    lr = 0.001 
+    operand_size = 80
+    applying_output_size = 30
+    hidden_size = 24
     
-    dataset_size = 2
-    minibatch_size = 2
+    dataset_size = 1000
+    minibatch_size = 1
     epochs = 10000
 
     # function_library = [addThem, addOne, addOne, addOne, addOne, addOne, addOne]
-    function_library = [addThem, randomResult, randomResult, randomResult]
+    function_library = [addThem, randomResult, randomResult]
     
-    applying_input_size = len(function_library) * (operand_size + 1) * 2
-    hidden_input_size = hidden_size + len(function_library) * (operand_size) * 2
+    applying_input_size = ((len(function_library) + 1) * operand_size) * 2
+    #applying_output_size = operand_size * 2
+    hidden_input_size = hidden_size + applying_output_size
+    output_input_size = hidden_size
+    
+    # print "SIZES:", applying_input_size, hidden_input_size, output_input_size
 
-    applying = RecurrentDense(applying_input_size, applying_size, learning_rate=lr)
-
+    applying = RecurrentDense(applying_input_size, applying_output_size, learning_rate=lr)
     hidden = RecurrentDense(hidden_input_size, hidden_size, learning_rate=lr)
     output = RecurrentDense(hidden_size, 2*operand_size, learning_rate=lr, activation='sigmoid')
-    model = SoftBBFN(hidden, output, function_library, sequence_length=2)
+    model = SoftBBFN(applying, hidden, output, function_library, sequence_length=1)
     model.addLoss(MSE())
 
     X, y = loadAddition(dataset_size, operand_size)
