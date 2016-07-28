@@ -38,9 +38,9 @@ def randomResult(packed_operands):
 
 if __name__ == "__main__":
     lr = 0.001 
-    operand_size = 80
-    applying_output_size = 30
-    hidden_size = 24
+    operand_size = 8
+    applying_output_size = 8
+    hidden_size = 8
     
     dataset_size = 1000
     minibatch_size = 1
