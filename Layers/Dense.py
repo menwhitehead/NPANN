@@ -7,7 +7,7 @@ class Dense(Layer):
                  number_outgoing,
                  activation='sigmoid',
                  weight_init='glorot_uniform',
-                 learning_rate=0.01,
+                 learning_rate=0.001,
                  momentum=0.9):
         self.activation_func = activations[activation]
         self.dactivation_func = dactivations[activation]
