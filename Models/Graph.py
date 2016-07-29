@@ -73,26 +73,26 @@ class Graph:
         for layer_name in self.input_layers:
             layers_computed[layer_name] = True
             layer_outputs[layer_name] = self.input_layers[layer_name]
-            
-        # print "layers computed", layers_computed
-
-            
+                       
         while not self.forwardComputationComplete(layers_computed):
             for layer_name in self.layers:
                 if not layers_computed[layer_name]:
-                    print "FORWARDING:", layer_name
                     if self.forwardLayerInputsReady(layer_name, layers_computed):
+                        # print "FORWARDING:", layer_name
+
                         if self.layers[layer_name].__class__.__name__ != "Merge":
                             # Only has one input!
                             # print "COMPUTING:", layer_name
                             incoming_layer = self.backward_connections[layer_name][0]
+                            # print "\tINCOMING:", incoming_layer
+                            # print layer_outputs[incoming_layer].shape
                             layer_outputs[layer_name] = self.layers[layer_name].forward(layer_outputs[incoming_layer]) 
                             layers_computed[layer_name] = True
                         else:
                             # Treat a merging layer differently
                             merge_inputs = []
                             for incoming_layer in self.backward_connections[layer_name]:
-                                merge_inputs.append(layers_computed[incoming_layer])
+                                merge_inputs.append(layer_outputs[incoming_layer])
                             layer_outputs[layer_name] = self.layers[layer_name].forward(merge_inputs)  
                             layers_computed[layer_name] = True
             
@@ -129,18 +129,21 @@ class Graph:
                 if not layers_computed[layer_name]:
                     if self.backwardLayerInputsReady(layer_name, layers_computed):
                         # print "BACKING:", layer_name
-                        if layer_name not in self.output_layers:
-                            inc_grad = np.zeros((4, ly.weights.shape[1]))
-
-                            for other_layer in self.forward_connections[layer_name]:
-                                inc_grad += layer_outputs[other_layer]
-                        else:
-                            inc_grad = loss_grad
-
-                        # print "INC:", inc_grad
                             
+                        if self.layers[layer_name].__class__.__name__ != "Merge":
+                            # First figure out the incoming gradient
+                            if layer_name not in self.output_layers:
+                                inc_grad = np.zeros((4, ly.weights.shape[1]))
+    
+                                for other_layer in self.forward_connections[layer_name]:
+                                    inc_grad += layer_outputs[other_layer]
+                            else:
+                                inc_grad = loss_grad
+                         
                         layer_outputs[layer_name] = self.layers[layer_name].backward(inc_grad)
                         layers_computed[layer_name] = True
+                        
+                        
 
         return "BACKPROP DONE!!!"
     

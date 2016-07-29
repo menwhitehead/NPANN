@@ -13,7 +13,7 @@ def graphTest():
     ann.addLayer("dense2a", Dense(15, 3, learning_rate=lr), ["dense1"])
     ann.addLayer("dense2b", Dense(15, 3, learning_rate=lr), ["dense1"])
     ann.addLayer("merger", Merge(), ["dense2a", "dense2b"])
-    ann.addLayer("dense3", Dense(3, 1, learning_rate=lr), ["merger"], is_output=True)
+    ann.addLayer("dense3", Dense(6, 1, learning_rate=lr), ["merger"], is_output=True)
     ann.addLoss(MSE())
 
     X, y = loadBreastCancer()
