@@ -77,6 +77,12 @@ class Sequential:
         print "\t*** Accuracy: %.4f ***" % (correct / float(dataset_size))
         
         
+    def accuracyBinary(self, X, y):
+        outputs = self.forward(X)
+        outputs = np.round(outputs)
+        correct = np.sum(y == outputs)
+        return 100.0 * (correct / float(len(X)))
+        
     def __str__(self):
         result = ''
         for layer in self.layers:

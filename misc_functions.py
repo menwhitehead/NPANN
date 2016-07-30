@@ -141,6 +141,23 @@ def loadBreastCancer():
     return X, y
 
 
+def loadBreastCancerTanh():
+    size = 263
+    f = h5py.File(DATASETS_DIR + "breast_cancer.hdf5", 'r')
+    X = f['data']['data'][:].T[:size]
+    # np.array([f['t_train'][:size]]).T
+    y = np.array([f['data']['label'][:size]]).T
+    
+    littles = np.amin(X, axis=0)
+    bigs = np.amax(X, axis=0)
+    
+    X = 1 - (2 * (X - littles) / (bigs - littles))
+    
+    print "Breast Cancer Dataset LOADED", X.shape, y.shape
+    
+    return X, y
+
+
 def loadMNIST():
     size = 50000
     f = h5py.File(DATASETS_DIR + "mnist.hdf5", 'r')

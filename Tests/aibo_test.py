@@ -10,11 +10,9 @@ if __name__ == "__main__":
     ann.addLayer(Dense(9, 30, activation='sigmoid', weight_init="glorot_normal"))
     #ann.addLayer(Dense(30, 1, activation='sigmoid', weight_init="glorot_normal"))
     #ann.addLayer(AiboPG2(9, 3, activation='sigmoid', weight_init="glorot_normal"))
-    ann.addLayer(AiboPG(30, 1, activation='sigmoid', weight_init="glorot_normal"))
-    
+    ann.addLayer(AiboPG2(30, 1, activation='sigmoid', weight_init="glorot_normal"))
     ann.addLoss(MSE())
-    # ann.addOptimizer('sgd')
-    # sys.exit(1)
+
     X, y = loadBreastCancer() #loadXOR()
     minibatch_size = 10
     epochs_per_chunk = 100

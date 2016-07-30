@@ -12,8 +12,8 @@ if __name__ == "__main__":
     ann.addLoss(MSE())
     # ann.addOptimizer('sgd')
     # sys.exit(1)
-    X, y = loadXOR()    
-    minibatch_size = 4
+    X, y = loadBreastCancer() #loadXOR()    
+    minibatch_size = 16
     number_epochs = 2500
 
     ann.train(X, y, minibatch_size, number_epochs)

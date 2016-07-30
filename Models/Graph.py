@@ -99,7 +99,7 @@ class Graph:
         # Should output multiple values in the future?
         # for now only output a single value...
         for layer_name in self.output_layers:
-            # print "OUTPUT:", layer_name
+            #print "OUTPUT:", layer_name, layer_outputs[layer_name]
             return layer_outputs[layer_name]
 
         return "ERROR!!!"
@@ -133,9 +133,12 @@ class Graph:
                         if self.layers[layer_name].__class__.__name__ != "Merge":
                             # First figure out the incoming gradient
                             if layer_name not in self.output_layers:
-                                inc_grad = np.zeros((4, ly.weights.shape[1]))
+                                # print "layer ", layer_name, " is getting a sum"
+                                #inc_grad = np.zeros((1, ly.weights.shape[1]))
+                                inc_grad = np.zeros_like(layer_outputs[self.forward_connections[layer_name][0]])
     
                                 for other_layer in self.forward_connections[layer_name]:
+                                    # print layer_name, other_layer
                                     inc_grad += layer_outputs[other_layer]
                             else:
                                 inc_grad = loss_grad
