@@ -14,7 +14,7 @@ if __name__ == "__main__":
     ann.addLayer(Dense(15, 1, learning_rate=lr, activation='tanh', weight_init="glorot_normal"))
     ann.addLoss(MSE())
     X, y = loadBreastCancerTanh() #loadXOR()    
-    minibatch_size = 1
+    minibatch_size = 32
     number_epochs = 100
 
     for i in range(100):

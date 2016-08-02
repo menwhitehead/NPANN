@@ -8,24 +8,25 @@ DATASETS_DIR = "Datasets/"
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
+def dsigmoid(x):
+    s = sigmoid(x)  # :P  ????
+    #s = x
+    return s * (1 - s)
+
 def tanh(x):
     return np.tanh(x)
 
 def dtanh(x):
     return 1 - np.power(x, 2)
 
-def dsigmoid(x):
-    #s = sigmoid(x)  # :P  ????
-    s = x
-    return s * (1 - s)
-
 def relu(x):
-    return np.maximum(x, 0, x)
+    return np.maximum(x, 0)
 
 def drelu(x):
-    d = np.ones_like(x)
-    d[x <= 0] = 0
-    return d
+    # d = np.ones_like(x)
+    # d[x <= 0] = 0
+    # return d
+    return np.array(x>0, dtype=int)
 
 def softmax(x):
     #print "X:", x

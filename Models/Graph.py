@@ -185,7 +185,6 @@ class Graph:
                 print "Epoch #%d, Error: %.8f, Accuracy: %.4f" % (i, epoch_err, self.accuracyBinary(X, y))
             
             
-            
     def accuracyBinary(self, X, y):
         inputs = {"input1": X}
         outputs = self.forward(inputs)
