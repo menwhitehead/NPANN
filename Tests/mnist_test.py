@@ -1,6 +1,6 @@
 from misc_functions import *
-from Layers.Dense import Dense
 from Models.Sequential import Sequential
+from Layers.Dense import Dense
 from Losses.CategoricalCrossEntropy import CategoricalCrossEntropy
 from Optimizers.RMSProp import RMSProp
 
