@@ -1,3 +1,4 @@
+import gnumpy as gnp
 import numpy as np
 import time
 from misc_functions import *
@@ -24,26 +25,26 @@ class SoftBBFN:
     def forward(self, X):
 
         #current_exp = 0 # the part of the input expression that is being focused on
-        current_hidden_state = np.zeros((X.shape[0], self.hidden_layer.weights.shape[1]))  # ??? maybe wrong size
+        current_hidden_state = gnp.zeros((X.shape[0], self.hidden_layer.weights.shape[1]))  # ??? maybe wrong size
         
         for s in range(self.sequence_length):
 
             # Call the chosen function for each X pattern, for each function
-            function_results = np.zeros((X.shape[0], (1 + len(self.function_library)) * X.shape[1]))  # +1 for input
+            function_results = gnp.zeros((X.shape[0], (1 + len(self.function_library)) * X.shape[1]))  # +1 for input
             # function_results = np.zeros((X.shape[0], (len(self.function_library)) * X.shape[1]))  
             for i in range(len(X)):
-                pattern_results = np.zeros((len(self.function_library), X.shape[1]))
+                pattern_results = gnp.zeros((len(self.function_library), X.shape[1]))
                 for j in range(len(self.function_library)):
                     #function_results[i][j] = self.function_library[j](X[i])
                     pattern_results[j] = self.function_library[j](X[i])
                     
-                pattern_results = np.hstack((X[i], np.hstack(pattern_results)))
+                pattern_results = gnp.hstack((X[i], gnp.hstack(pattern_results)))
                 # pattern_results = np.hstack(pattern_results)
                 # print pattern_results
                 function_results[i] = pattern_results
             # print "FUNC RESULT:", function_results
             
-            stacked = np.stack(function_results, axis=0)
+            stacked = gnp.stack(function_results, axis=0)
             # print "STACKED:", stacked.shape
             
             apply_out = self.applying_layer.forward(stacked)
@@ -77,7 +78,7 @@ class SoftBBFN:
         curr_grad = self.hidden_layer.backward(curr_grad)
         
         # split the grad to the two incoming lines
-        curr_hidden_grad, curr_grad = np.split(curr_grad, [self.hidden_layer.weights.shape[1]], axis=1)
+        curr_hidden_grad, curr_grad = gnp.split(curr_grad, [self.hidden_layer.weights.shape[1]], axis=1)
         
         curr_grad = self.applying_layer.backward(curr_grad)
 
@@ -115,7 +116,7 @@ class SoftBBFN:
             # print "GRAD AFTER HIDDEN:", curr_grad
             
             # split the grad to the two incoming lines
-            curr_hidden_grad, curr_grad = np.split(curr_hidden_grad, [self.hidden_layer.weights.shape[1]], axis=1)
+            curr_hidden_grad, curr_grad = gnp.split(curr_hidden_grad, [self.hidden_layer.weights.shape[1]], axis=1)
             # print "HIDDEN_GRAD:", hidden_grad
             # print "FUNCCALC_GRAD:", func_calc_grad
             
@@ -177,9 +178,9 @@ class SoftBBFN:
             
     def accuracy2(self, X, y):
         outputs = self.forward(X)
-        max_outputs = np.argmax(outputs, axis=1)
-        max_targets = np.argmax(y, axis=1)
-        correct = np.sum(max_targets == max_outputs)
+        max_outputs = gnp.argmax(outputs, axis=1)
+        max_targets = gnp.argmax(y, axis=1)
+        correct = gnp.sum(max_targets == max_outputs)
         return 100.0 * (correct / float(len(X)))
     
 

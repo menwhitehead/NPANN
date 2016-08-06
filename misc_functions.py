@@ -1,3 +1,4 @@
+import gnumpy as gnp
 import numpy as np
 import h5py
 import math
@@ -14,13 +15,13 @@ def dsigmoid(x):
     return s * (1 - s)
 
 def tanh(x):
-    return np.tanh(x)
+    return gnp.tanh(x)
 
 def dtanh(x):
     return 1 - np.power(x, 2)
 
 def relu(x):
-    return np.maximum(x, 0)
+    return gnp.maximum(x, 0)
 
 def drelu(x):
     # d = np.ones_like(x)
@@ -30,9 +31,9 @@ def drelu(x):
 
 def softmax(x):
     #print "X:", x
-    ex = np.exp(x)
+    ex = gnp.exp(x)
     #z = np.sum(ex, axis=1)
-    z = np.sum(ex)
+    z = gnp.sum(ex)
     #z = z.reshape(z.shape[0], 1)
     result = ex / z
     
@@ -69,12 +70,12 @@ def zeroWeights(number_incoming, number_outgoing):
 
 
 def convertToOneHot(val, size):
-    x = np.zeros(size)
+    x = gnp.zeros(size)
     x[val] = 0.9
     return x
 
 def convertToBinary(val, size):
-    x = np.zeros(size)
+    x = gnp.zeros(size)
     bin_rep = bin(val)[2:]  # get a binary string
     # print bin_rep
     start_ind = size - len(bin_rep)
@@ -108,7 +109,7 @@ def loadAddition(number_problems=100, max_number=10):
         operand2 = random.randrange(max_number)
         # xs.append(np.append(convertToOneHot(operand1, max_number), convertToOneHot(operand2, max_number)))
         # ys.append(convertToOneHot(operand1 + operand2, max_number * 2))
-        xs.append(np.append(convertToBinary(operand1, max_number), convertToBinary(operand2, max_number)))
+        xs.append(gnp.append(convertToBinary(operand1, max_number), convertToBinary(operand2, max_number)))
         ys.append(convertToBinary(operand1 + operand2, max_number * 2))
         #print operand1, operand2, operand1 + operand2
     X = np.array(xs)
@@ -197,7 +198,7 @@ def accuracyBinary(model, X, y):
     outputs = model.forward(inputs)
     #print outputs
     outputs = np.round(outputs)
-    correct = np.sum(y == outputs)
+    correct = gnp.sum(y == outputs)
     return 100.0 * (correct / float(len(X)))
     
     
@@ -214,8 +215,8 @@ def accuracy(model, X, y):
     output = model.forward(inputs)
     for ind in range(dataset_size):
         curr_out = output[ind]
-        max_ind = list(curr_out).index(np.max(curr_out))
-        tar_ind = list(y[ind]).index(np.max(y[ind]))
+        max_ind = list(curr_out).index(gnp.max(curr_out))
+        tar_ind = list(y[ind]).index(gnp.max(y[ind]))
         if max_ind == tar_ind:
             correct += 1
     

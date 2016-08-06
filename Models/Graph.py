@@ -1,3 +1,4 @@
+import gnumpy as gnp
 import numpy as np
 from misc_functions import accuracy, accuracyBinary
 
@@ -143,7 +144,7 @@ class Graph:
                             else:
                                 layer_size = ly.weights.shape[1]
 
-                            inc_grad = np.zeros((minibatch_size, layer_size))
+                            inc_grad = gnp.zeros((minibatch_size, layer_size))
 
                             #inc_grad = np.zeros_like(layer_outputs[self.forward_connections[layer_name][0]])
 

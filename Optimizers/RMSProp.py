@@ -19,7 +19,7 @@ class RMSProp(Optimizer):
         left = self.gamma * self.prev_updates[layer_name]
         right = (1.0 - self.gamma) * np.power(grad, 2)
         self.prev_updates[layer_name] =  left + right
-        adjusted_grad = grad / np.sqrt(self.little + self.prev_updates[layer_name])
+        adjusted_grad = grad / gnp.sqrt(self.little + self.prev_updates[layer_name])
             
         layer_update = self.learning_rate * adjusted_grad
         

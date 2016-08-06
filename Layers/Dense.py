@@ -59,7 +59,7 @@ class DenseWithBias(Layer):
         bias = np.ones((len(x), 1))
         # print x.shape, bias.shape
         # print np.hstack((x, bias))
-        self.incoming_acts = np.hstack((x, bias))
+        self.incoming_acts = gnp.hstack((x, bias))
         #self.incoming_acts = np.concatenate((x, bias))
         # print self.incoming_acts.shape, self.weights.shape
         self.outgoing_acts = self.activation_func(self.incoming_acts.dot(self.weights))
@@ -108,7 +108,7 @@ class RecurrentDense(Layer):
         self.incoming_grads = []
         self.outgoing_grads = []
         
-        self.weight_update = np.zeros_like(self.weights)
+        self.weight_update = gnp.zeros_like(self.weights)
         self.forward_count = 0  # How many times forward is called before backwards start
         
     def forward(self, x):
