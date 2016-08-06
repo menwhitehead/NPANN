@@ -21,7 +21,7 @@ if __name__ == "__main__":
     ann.addOptimizer(RMSProp(learning_rate = lr))
 
     X, y = loadBreastCancerTanh() #loadXOR()    
-    minibatch_size = 16
+    minibatch_size = 128
     number_epochs = 10000
 
     ann.train(X, y, minibatch_size, number_epochs, verbose=2)
