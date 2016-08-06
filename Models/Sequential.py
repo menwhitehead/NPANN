@@ -1,4 +1,5 @@
-import numpy as np
+import gnumpy as np
+import numpy as np2
 from misc_functions import accuracy, accuracyBinary
 
 class Sequential:
@@ -41,7 +42,7 @@ class Sequential:
         output = self.forward(X)
         final_grad = self.backward(output, y)
         self.update()
-        return np.linalg.norm(self.loss)
+        return np2.linalg.norm(self.loss)
     
     def resetLayers(self):
         for layer in self.layers:
@@ -51,7 +52,7 @@ class Sequential:
         self.resetLayers()  # clear out any old tables/state
         dataset_size = len(X)
         for i in range(number_epochs):
-            all_minibatch_indexes = np.random.permutation(dataset_size)
+            all_minibatch_indexes = np2.random.permutation(dataset_size)
             epoch_err = 0
             for j in range(dataset_size / minibatch_size):
                 minibatch_indexes = all_minibatch_indexes[j * minibatch_size:j * minibatch_size + minibatch_size]
