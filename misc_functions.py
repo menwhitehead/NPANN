@@ -185,6 +185,46 @@ def loadMNIST():
 
 
 
+# Testing model accuracies
+def accuracyBinary(model, X, y):
+
+    # Make a dictionary of inputs if the model is a Graph
+    if model.__class__.__name__ == "Graph":
+        inputs = {"input1": X}
+    else:
+        inputs = X
+    
+    outputs = model.forward(inputs)
+    #print outputs
+    outputs = np.round(outputs)
+    correct = np.sum(y == outputs)
+    return 100.0 * (correct / float(len(X)))
+    
+    
+def accuracy(model, X, y):
+    
+    # Make a dictionary of inputs if the model is a Graph
+    if model.__class__.__name__ == "Graph":
+        inputs = {"input1": X}
+    else:
+        inputs = X            
+    
+    dataset_size = len(X)
+    correct = 0
+    output = model.forward(inputs)
+    for ind in range(dataset_size):
+        curr_out = output[ind]
+        max_ind = list(curr_out).index(np.max(curr_out))
+        tar_ind = list(y[ind]).index(np.max(y[ind]))
+        if max_ind == tar_ind:
+            correct += 1
+    
+    print "\t*** Accuracy: %.4f ***" % (correct / float(dataset_size))
+
+
+
+
+
 activations = {'sigmoid':sigmoid,
                'relu':relu,
                'softmax':softmax,

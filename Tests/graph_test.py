@@ -23,9 +23,10 @@ def graphTest():
     ann.addOptimizer(RMSProp(learning_rate = lr))
 
     X, y = loadBreastCancerTanh()
-    minibatch_size = 4
+    minibatch_size = 16
     number_epochs = 1000
-    ann.train(X, y, minibatch_size, number_epochs, verbose=True)
+    ann.train(X, y, minibatch_size, number_epochs, verbose=2)
+    print "Final accuracy: ", accuracyBinary(ann, X, y)
 
 def comparisonSequentialTest():
     lr = 0.01
@@ -35,11 +36,12 @@ def comparisonSequentialTest():
     ann.addLoss(MSE())
     ann.addOptimizer(RMSProp(learning_rate = lr))
 
-    X, y = loadBreastCancer() #loadXOR()
-    minibatch_size = 4
+    X, y = loadBreastCancerTanh() #loadXOR()
+    minibatch_size = 16
     number_epochs = 1000
-    ann.train(X, y, minibatch_size, number_epochs, verbose=True)
-    print ann.accuracyBinary(X, y)
+    ann.train(X, y, minibatch_size, number_epochs, verbose=2)
+    #print ann.accuracyBinary(X, y)
+    print accuracyBinary(ann, X, y)
 
 
 if __name__ == "__main__":

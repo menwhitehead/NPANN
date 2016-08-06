@@ -1,4 +1,5 @@
 import numpy as np
+from misc_functions import accuracy, accuracyBinary
 
 class Sequential:
     
@@ -59,29 +60,11 @@ class Sequential:
                 minibatch_err = self.iterate(minibatch_X, minibatch_y)
                 epoch_err += minibatch_err
                 
-            if verbose:
+            if verbose==1:
                 print "Epoch #%d, Error: %.8f" % (i, epoch_err)
+            elif verbose==2:
+                print "Epoch #%d, Error: %.8f, Accuracy: %.4f" % (i, epoch_err, accuracyBinary(self, X, y))                      
             
-            
-    def accuracy(self, X, y):
-        dataset_size = len(X)
-        correct = 0
-        output = self.forward(X)
-        for ind in range(dataset_size):
-            curr_out = output[ind]
-            max_ind = list(curr_out).index(np.max(curr_out))
-            tar_ind = list(y[ind]).index(np.max(y[ind]))
-            if max_ind == tar_ind:
-                correct += 1
-        
-        print "\t*** Accuracy: %.4f ***" % (correct / float(dataset_size))
-        
-        
-    def accuracyBinary(self, X, y):
-        outputs = self.forward(X)
-        outputs = np.round(outputs)
-        correct = np.sum(y == outputs)
-        return 100.0 * (correct / float(len(X)))
         
     def __str__(self):
         result = ''

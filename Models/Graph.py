@@ -1,4 +1,5 @@
 import numpy as np
+from misc_functions import accuracy, accuracyBinary
 
 class Graph:
     
@@ -191,7 +192,7 @@ class Graph:
         for layer in self.layers:
             layer.reset()
     
-    def train(self, X, y, minibatch_size, number_epochs, verbose=True):
+    def train(self, X, y, minibatch_size, number_epochs, verbose=0):
         #self.resetLayers()  # clear out any old tables/state
         dataset_size = len(X)
         for i in range(number_epochs):
@@ -205,31 +206,11 @@ class Graph:
                 minibatch_err = self.iterate(inputs, minibatch_y)
                 epoch_err += minibatch_err
                 
-            if verbose:
-                print "Epoch #%d, Error: %.8f, Accuracy: %.4f" % (i, epoch_err, self.accuracyBinary(X, y))
-            
-            
-    def accuracyBinary(self, X, y):
-        inputs = {"input1": X}
-        outputs = self.forward(inputs)
-        #print outputs
-        outputs = np.round(outputs)
-        correct = np.sum(y == outputs)
-        return 100.0 * (correct / float(len(X)))
-        
-        
-    def accuracy(self, X, y):
-        dataset_size = len(X)
-        correct = 0
-        output = self.forward(X)
-        for ind in range(dataset_size):
-            curr_out = output[ind]
-            max_ind = list(curr_out).index(np.max(curr_out))
-            tar_ind = list(y[ind]).index(np.max(y[ind]))
-            if max_ind == tar_ind:
-                correct += 1
-        
-        print "\t*** Accuracy: %.4f ***" % (correct / float(dataset_size))
+            if verbose==1:
+                print "Epoch #%d, Error: %.8f" % (i, epoch_err)
+            elif verbose==2:
+                print "Epoch #%d, Error: %.8f, Accuracy: %.4f" % (i, epoch_err, accuracyBinary(self, X, y))                
+
         
         
     def __str__(self):
