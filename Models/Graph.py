@@ -17,7 +17,6 @@ class Graph:
             self.output_layers.append(layer_name)
                 
         for incoming_layer in inputs:
-            #prev_layer = self.layers[inp]
             if incoming_layer not in self.forward_connections:
                 self.forward_connections[incoming_layer] = []
             self.forward_connections[incoming_layer].append(layer_name)
@@ -76,14 +75,8 @@ class Graph:
             for layer_name in self.layers:
                 if not layers_computed[layer_name]:
                     if self.forwardLayerInputsReady(layer_name, layers_computed):
-                        # print "FORWARDING:", layer_name
-
                         if self.layers[layer_name].__class__.__name__ != "Merge":
-                            # Only has one input!
-                            # print "COMPUTING:", layer_name
                             incoming_layer = self.backward_connections[layer_name][0]
-                            # print "\tINCOMING:", incoming_layer
-                            # print layer_outputs[incoming_layer].shape
                             layer_outputs[layer_name] = self.layers[layer_name].forward(layer_outputs[incoming_layer]) 
                             layers_computed[layer_name] = True
                         else:
@@ -97,7 +90,6 @@ class Graph:
         # Should output multiple values in the future?
         # for now only output a single value...
         for layer_name in self.output_layers:
-            #print "OUTPUT:", layer_name, layer_outputs[layer_name]
             return layer_outputs[layer_name]
 
         return "ERROR!!!"
@@ -106,7 +98,6 @@ class Graph:
     
     def backward(self, loss_grad):
         
-        # print "LOSS at output:", loss_grad
         minibatch_size = len(loss_grad)
         
         # Again, assume a single output layer for now...
@@ -119,21 +110,11 @@ class Graph:
         for layer_name in self.layers:
             layers_computed[layer_name] = False
         
-        #layers_computed[self.output_layers[0]] = True
-        #layer_outputs[layer_name] = self.input_layers[layer_name]
-        #layer_outputs[self.output_layers[0]] = loss_grad
-            
-        # print "layers computed", layers_computed
-        
         while not self.computationComplete(layers_computed):
             for layer_name in self.layers:
                 ly = self.layers[layer_name]
                 if not layers_computed[layer_name]:
                     if self.backwardLayerInputsReady(layer_name, layers_computed):
-                        # print "BACKING:", layer_name
-                            
-                        #if self.layers[layer_name].__class__.__name__ != "Merge":
-                            # First figure out the incoming gradient
                             
                         if layer_name in self.output_layers:
                             inc_grad = loss_grad
@@ -145,8 +126,6 @@ class Graph:
 
                             inc_grad = np.zeros((minibatch_size, layer_size))
 
-                            #inc_grad = np.zeros_like(layer_outputs[self.forward_connections[layer_name][0]])
-
                             for other_layer in self.forward_connections[layer_name]:
                                 if self.layers[other_layer].__class__.__name__ != "Merge":
                                     inc_grad += layer_outputs[other_layer]
@@ -154,24 +133,12 @@ class Graph:
                                     # need to extract out this layer's part of the merge's gradient
                                     merge_grad = layer_outputs[other_layer]
                                     this_layer_index = self.backward_connections[other_layer].index(layer_name)
-                                    # print "this layer index:", this_layer_index
                                     start, end = this_layer_index * layer_size, (this_layer_index + 1) * layer_size
                                     inc_grad += merge_grad[:,start:end]
                                 
-                            # print "layer ", layer_name, " is getting a sum"
-                            # inc_grad = np.zeros((1, ly.weights.shape[1]))
-                        # 
-                        # else:
-                        #     inc_grad = loss_grad
-                         
-                        # print "BACKPROP at %s with grad" % layer_name, inc_grad
                         layer_outputs[layer_name] = self.layers[layer_name].backward(inc_grad)
                         layers_computed[layer_name] = True
 
-        # print "Layer outputs:"
-        # for key in layer_outputs:
-        #     print key, layer_outputs[key]
-        # sys.e
         return "BACKPROP DONE!!!"
 
     
@@ -181,7 +148,6 @@ class Graph:
 
     def iterate(self, X, y):
         output = self.forward(X)
-        # print "OUTPUT:", output
         self.loss = self.loss_layer.calculateLoss(output, y)
         curr_grad = self.loss_layer.calculateGrad(output, y)
         final_grad = self.backward(curr_grad)
