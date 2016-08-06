@@ -15,6 +15,8 @@ if __name__ == "__main__":
     # ann.addLayer(Dense(256, 256))
     # ann.addLayer(Dense(256, 10))
     
+    # TEST!
+    
     ann.addLoss(CategoricalCrossEntropy())
     ann.addOptimizer(RMSProp(learning_rate = lr))
 
