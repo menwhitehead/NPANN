@@ -37,13 +37,13 @@ def randomResult(packed_operands):
 
 
 if __name__ == "__main__":
-    lr = 0.001 
+    lr = 0.01 
     operand_size = 8
     applying_output_size = 8
     hidden_size = 8
     
     dataset_size = 1000
-    minibatch_size = 1
+    minibatch_size = 4
     epochs = 10000
 
     # function_library = [addThem, addOne, addOne, addOne, addOne, addOne, addOne]

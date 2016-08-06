@@ -34,7 +34,7 @@ class Sequential:
     
     def update(self):
         for layer in self.layers:
-            layer.update()
+            layer.update(self.optimizer)
 
     def iterate(self, X, y):
         output = self.forward(X)

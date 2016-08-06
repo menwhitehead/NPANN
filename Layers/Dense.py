@@ -7,17 +7,13 @@ class Dense(Layer):
     def __init__(self, number_incoming,
                  number_outgoing,
                  activation='sigmoid',
-                 weight_init='glorot_uniform',
-                 learning_rate=0.001,
-                 momentum=0.9):
+                 weight_init='glorot_uniform'):
         self.activation_func = activations[activation]
         self.dactivation_func = dactivations[activation]
         self.number_incoming = number_incoming
         self.number_outgoing = number_outgoing
         self.weights = weight_inits[weight_init](self.number_incoming, self.number_outgoing)
         self.prev_update = 0.0
-        self.learning_rate = learning_rate
-        self.momentum = momentum
     
     def forward(self, x):
         self.incoming_acts = x
@@ -29,13 +25,15 @@ class Dense(Layer):
         self.outgoing_grad = self.incoming_grad * self.dactivation_func(self.outgoing_acts)
         return self.outgoing_grad.dot(self.weights.T)
         
-    def update(self):
-        mterm = self.momentum * self.prev_update
+    def update(self, optimizer):
         self.layer_grad = self.incoming_acts.T.dot(self.outgoing_grad)
         self.layer_grad /= len(self.incoming_acts)
-        self.prev_update =  mterm + self.layer_grad * self.learning_rate
-        self.weights += self.prev_update
-        #print "GRAD:", self.layer_grad
+    
+        layer_update = optimizer.getUpdate(self, self.layer_grad)
+        # mterm = self.momentum * self.prev_update
+        # self.prev_update =  mterm + self.layer_grad * self.learning_rate
+        
+        self.weights += layer_update #self.prev_update
 
 
 
