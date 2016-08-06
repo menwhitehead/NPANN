@@ -26,16 +26,16 @@ class Graph:
     def addLoss(self, loss_layer):
         self.loss_layer = loss_layer
         
+    def addOptimizer(self, opt):
+        self.optimizer = opt
+        
     def __getitem__(self, layer_name):
         return self.layers[layer_name]
     
     def setInput(self, input_name, X):
         self.input_layers[input_name] = X
-        
-    def addOptimizer(self, opt):
-        self.optimizer = opt
-        
-    def forwardComputationComplete(self, layers_computed):
+               
+    def computationComplete(self, layers_computed):
         for layer_name in layers_computed:
             if layers_computed[layer_name] == False:
                 return False
@@ -44,12 +44,6 @@ class Graph:
     def forwardLayerInputsReady(self, layer_name, layers_computed):
         for incoming_layer in self.backward_connections[layer_name]:
             if not layers_computed[incoming_layer]:
-                return False
-        return True
-    
-    def backwardComputationComplete(self, layers_computed):
-        for layer_name in layers_computed:
-            if layers_computed[layer_name] == False:
                 return False
         return True
     
@@ -77,7 +71,7 @@ class Graph:
             layers_computed[layer_name] = True
             layer_outputs[layer_name] = self.input_layers[layer_name]
                        
-        while not self.forwardComputationComplete(layers_computed):
+        while not self.computationComplete(layers_computed):
             for layer_name in self.layers:
                 if not layers_computed[layer_name]:
                     if self.forwardLayerInputsReady(layer_name, layers_computed):
@@ -110,6 +104,10 @@ class Graph:
     
     
     def backward(self, loss_grad):
+        
+        # print "LOSS at output:", loss_grad
+        minibatch_size = len(loss_grad)
+        
         # Again, assume a single output layer for now...
         curr_layer = self.output_layers[0]
 
@@ -126,32 +124,55 @@ class Graph:
             
         # print "layers computed", layers_computed
         
-        while not self.backwardComputationComplete(layers_computed):
+        while not self.computationComplete(layers_computed):
             for layer_name in self.layers:
                 ly = self.layers[layer_name]
                 if not layers_computed[layer_name]:
                     if self.backwardLayerInputsReady(layer_name, layers_computed):
                         # print "BACKING:", layer_name
                             
-                        if self.layers[layer_name].__class__.__name__ != "Merge":
+                        #if self.layers[layer_name].__class__.__name__ != "Merge":
                             # First figure out the incoming gradient
-                            if layer_name not in self.output_layers:
-                                # print "layer ", layer_name, " is getting a sum"
-                                #inc_grad = np.zeros((1, ly.weights.shape[1]))
-                                inc_grad = np.zeros_like(layer_outputs[self.forward_connections[layer_name][0]])
-    
-                                for other_layer in self.forward_connections[layer_name]:
-                                    # print layer_name, other_layer
-                                    inc_grad += layer_outputs[other_layer]
+                            
+                        if layer_name in self.output_layers:
+                            inc_grad = loss_grad
+                        else:
+                            if ly.__class__.__name__ == "Merge":
+                                layer_size = ly.number_connections
                             else:
-                                inc_grad = loss_grad
+                                layer_size = ly.weights.shape[1]
+
+                            inc_grad = np.zeros((minibatch_size, layer_size))
+
+                            #inc_grad = np.zeros_like(layer_outputs[self.forward_connections[layer_name][0]])
+
+                            for other_layer in self.forward_connections[layer_name]:
+                                if self.layers[other_layer].__class__.__name__ != "Merge":
+                                    inc_grad += layer_outputs[other_layer]
+                                else:
+                                    # need to extract out this layer's part of the merge's gradient
+                                    merge_grad = layer_outputs[other_layer]
+                                    this_layer_index = self.backward_connections[other_layer].index(layer_name)
+                                    # print "this layer index:", this_layer_index
+                                    start, end = this_layer_index * layer_size, (this_layer_index + 1) * layer_size
+                                    inc_grad += merge_grad[:,start:end]
+                                
+                            # print "layer ", layer_name, " is getting a sum"
+                            # inc_grad = np.zeros((1, ly.weights.shape[1]))
+                        # 
+                        # else:
+                        #     inc_grad = loss_grad
                          
+                        # print "BACKPROP at %s with grad" % layer_name, inc_grad
                         layer_outputs[layer_name] = self.layers[layer_name].backward(inc_grad)
                         layers_computed[layer_name] = True
-                        
-                        
 
+        # print "Layer outputs:"
+        # for key in layer_outputs:
+        #     print key, layer_outputs[key]
+        # sys.e
         return "BACKPROP DONE!!!"
+
     
     def update(self):
         for layer_name in self.layers:
@@ -165,7 +186,7 @@ class Graph:
         final_grad = self.backward(curr_grad)
         self.update()
         return np.linalg.norm(self.loss)
-    
+            
     def resetLayers(self):
         for layer in self.layers:
             layer.reset()
@@ -191,6 +212,7 @@ class Graph:
     def accuracyBinary(self, X, y):
         inputs = {"input1": X}
         outputs = self.forward(inputs)
+        #print outputs
         outputs = np.round(outputs)
         correct = np.sum(y == outputs)
         return 100.0 * (correct / float(len(X)))
