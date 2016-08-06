@@ -32,6 +32,9 @@ class Graph:
     def setInput(self, input_name, X):
         self.input_layers[input_name] = X
         
+    def addOptimizer(self, opt):
+        self.optimizer = opt
+        
     def forwardComputationComplete(self, layers_computed):
         for layer_name in layers_computed:
             if layers_computed[layer_name] == False:
@@ -152,7 +155,7 @@ class Graph:
     
     def update(self):
         for layer_name in self.layers:
-            self.layers[layer_name].update()
+            self.layers[layer_name].update(self.optimizer)
 
     def iterate(self, X, y):
         output = self.forward(X)

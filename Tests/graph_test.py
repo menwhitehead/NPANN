@@ -5,16 +5,20 @@ from Layers.Dense import Dense
 from Layers.Merge import Merge
 from Layers.Dropout import Dropout
 from Losses.MSE import MSE
+from Optimizers.RMSProp import RMSProp
 
 def graphTest():
-    lr = 0.001
+    lr = 0.01
     ann = Graph()
-    ann.addLayer("dense1", Dense(9, 25, learning_rate=lr), ["input1"])
-    ann.addLayer("dense2a", Dense(25, 3, learning_rate=lr), ["dense1"])
-    ann.addLayer("dense2b", Dense(25, 3, learning_rate=lr), ["dense1"])
-    ann.addLayer("merger", Merge(), ["dense2a", "dense2b"])
-    ann.addLayer("dense3", Dense(6, 1, learning_rate=lr), ["merger"], is_output=True)
+    ann.addLayer("dense1", Dense(9, 25), ["input1"])
+    #ann.addLayer("dense2a", Dense(25, 3), ["dense1"])
+    #ann.addLayer("dense2b", Dense(25, 3), ["dense1"])
+    #ann.addLayer("merger", Merge(), ["dense2a", "dense2b"])
+    #ann.addLayer("merger", Merge(), ["dense2a"])
+    # ann.addLayer("dense3", Dense(3, 1), ["merger"], is_output=True)
+    ann.addLayer("dense3", Dense(25, 1), ["dense1"], is_output=True)
     ann.addLoss(MSE())
+    ann.addOptimizer(RMSProp(learning_rate = lr))
 
     X, y = loadBreastCancer()
     minibatch_size = 4
@@ -25,18 +29,19 @@ def graphTest():
 def comparisonSequentialTest():
     lr = 0.1
     ann = Sequential()
-    ann.addLayer(Dense(9, 15, learning_rate=lr))
-    ann.addLayer(Dense(15, 1, learning_rate=lr))
+    ann.addLayer(Dense(9, 15))
+    ann.addLayer(Dense(15, 1))
     ann.addLoss(MSE())
+    ann.addOptimizer(RMSProp(learning_rate = lr))
 
     X, y = loadBreastCancer() #loadXOR()
-    minibatch_size = 16
+    minibatch_size = 4
     number_epochs = 1000
     ann.train(X, y, minibatch_size, number_epochs, verbose=True)
     #ann.accuracy(X, y)
 
 
 if __name__ == "__main__":
-    comparisonSequentialTest()
-    # graphTest()
+    #comparisonSequentialTest()
+    graphTest()
     # 

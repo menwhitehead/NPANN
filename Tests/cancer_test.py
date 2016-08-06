@@ -18,8 +18,8 @@ if __name__ == "__main__":
     ann.addLayer(Dense(15, 1, activation='tanh', weight_init="glorot_normal"))
     ann.addLoss(MSE())
     #opt = SimpleGradientDescent(learning_rate = lr, momentum = mom)
-    # opt = AdaGrad(learning_rate = 0.1)
-    opt = RMSProp(learning_rate = 0.01)
+    opt = AdaGrad(learning_rate = 0.1)
+    # opt = RMSProp(learning_rate = 0.01)
 
     ann.addOptimizer(opt)
     X, y = loadBreastCancerTanh() #loadXOR()    

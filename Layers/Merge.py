@@ -9,7 +9,7 @@ class Merge(Layer):
     def backward(self, grad):
         return grad
     
-    def update(self):
+    def update(self, optimizer):
         pass
     
     def reset(self):
