@@ -35,11 +35,11 @@ def softmax(x):
     z = np.sum(ex)
     #z = z.reshape(z.shape[0], 1)
     result = ex / z
-    
+
     # print "SOFTMAXED:"
     # for i in range(len(result)):
     #     for j in range(len(result[i])):
-    #         print x[i][j], 
+    #         print x[i][j],
     #         print result[i][j]
     #     print
     return result
@@ -128,17 +128,17 @@ def loadBreastCancer():
     X = f['data']['data'][:].T[:size]
     # np.array([f['t_train'][:size]]).T
     y = np.array([f['data']['label'][:size]]).T
-    
+
     littles = np.amin(X, axis=0)
     bigs = np.amax(X, axis=0)
-    
+
     X = (X - littles) / (bigs - littles)
     #print X
-    
+
     y = (y + 1) / 2
-    
+
     print "Breast Cancer Dataset LOADED", X.shape, y.shape
-    
+
     return X, y
 
 
@@ -148,14 +148,14 @@ def loadBreastCancerTanh():
     X = f['data']['data'][:].T[:size]
     # np.array([f['t_train'][:size]]).T
     y = np.array([f['data']['label'][:size]]).T
-    
+
     littles = np.amin(X, axis=0)
     bigs = np.amax(X, axis=0)
-    
+
     X = 1 - (2 * (X - littles) / (bigs - littles))
-    
+
     print "Breast Cancer Dataset LOADED", X.shape, y.shape
-    
+
     return X, y
 
 
@@ -163,23 +163,23 @@ def loadMNIST():
     size = 50000
     f = h5py.File(DATASETS_DIR + "mnist.hdf5", 'r')
     X = f['x_train'][:size]
-    
+
     maxes = X.max(axis=0)
     for i in range(len(maxes)):
         if maxes[i] == 0:
             maxes[i] = 0.1
     X *= 1/maxes
-    
+
     raw_y = np.array([f['t_train'][:size]]).T
-    
+
     y = []
     for row in raw_y:
         y.append(convertToOneHot(row[0], 10))
-    
+
     y = np.array(y)
-    
+
     print "MNIST Dataset LOADED"
-    
+
     return X, y
 
 
@@ -193,22 +193,22 @@ def accuracyBinary(model, X, y):
         inputs = {"input1": X}
     else:
         inputs = X
-    
+
     outputs = model.forward(inputs)
     #print outputs
     outputs = np.round(outputs)
     correct = np.sum(y == outputs)
     return 100.0 * (correct / float(len(X)))
-    
-    
+
+
 def accuracy(model, X, y):
-    
+
     # Make a dictionary of inputs if the model is a Graph
     if model.__class__.__name__ == "Graph":
         inputs = {"input1": X}
     else:
-        inputs = X            
-    
+        inputs = X
+
     dataset_size = len(X)
     correct = 0
     output = model.forward(inputs)
@@ -218,7 +218,7 @@ def accuracy(model, X, y):
         tar_ind = list(y[ind]).index(np.max(y[ind]))
         if max_ind == tar_ind:
             correct += 1
-    
+
     return "\t*** Accuracy: %.4f ***" % (correct / float(dataset_size))
 
 
@@ -246,6 +246,3 @@ if __name__ == "__main__":
     print x
     print relu(x)
     print drelu(x)
-
-
-    
