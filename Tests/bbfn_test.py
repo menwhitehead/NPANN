@@ -1,9 +1,15 @@
 from misc_functions import *
 from Models.BBFN import BBFN
-from Layers.Dense import RecurrentDense
-from Layers.AiboPG import *
+from Models.SequentialReinforcement import SequentialReinforcement
+from Layers.RecurrentDense import RecurrentDense
+from Layers.Reinforce import Reinforce
+from Layers.Dense import Dense
+from Layers.Activations.Relu import Relu
+from Layers.Activations.Tanh import Tanh
+from Layers.Activations.Sigmoid import Sigmoid
 from Losses.CategoricalCrossEntropy import CategoricalCrossEntropy
-
+from Losses.MSE import MSE
+from Optimizers.RMSProp import RMSProp
 
 
 # get an array with two 1-hot operands (representing integers) packed in
@@ -37,23 +43,49 @@ def randomResult(packed_operands):
 
 
 if __name__ == "__main__":
-    lr = 0.05   # 0.05 worked instantly!
     operand_size = 8
-    hidden_size = 24
+    hidden_size = 32
     dataset_size = 10000
-    minibatch_size = 1
+    minibatch_size = 4
     epochs = 10000
-    
+
     # function_library = [addThem, addOne, addOne, addOne, addOne, addOne, addOne]
-    function_library = [addThem, randomResult, randomResult, randomResult]
-    applying = RecurrentDense(2*operand_size, 2*operand_size, learning_rate=lr, activation='sigmoid')
-    hidden = RecurrentDense(hidden_size + 2*operand_size, hidden_size, learning_rate=lr)
-    #output = RecurrentDense(hidden_size, 2*operand_size, learning_rate=lr, activation='softmax')
-    output = RecurrentDense(hidden_size, 2*operand_size, learning_rate=lr, activation='sigmoid')
-    func = AiboPGRecurrent(hidden_size, len(function_library), activation='none')
-    exp = AiboPGRecurrent(hidden_size, 2, activation='none')
-    model = BBFN(applying, hidden, output, func, exp, function_library, sequence_length=2)
-    model.addLoss(CategoricalCrossEntropy())
+    #function_library = [addThem, randomResult, randomResult, randomResult]
+    function_library = [addThem, randomResult]
+
+    applying = RecurrentDense(2*operand_size, 2*operand_size)
+    applying_act = Tanh()
+
+    hidden = RecurrentDense(hidden_size + 2*operand_size, hidden_size)
+    hidden_act = Tanh()
+
+    output = RecurrentDense(hidden_size, 2*operand_size)
+    output_act = Relu()
+
+    opt = RMSProp()
+
+    # Network for choosing the next function to call
+    func_network = SequentialReinforcement()
+    func_network.addLayer(Dense(hidden_size, len(function_library)))
+    func_network.addLayer(Reinforce(len(function_library), std_dev=0.11))
+    func_network.addLayer(Tanh())
+    func_network.addOptimizer(opt)
+
+    # Network for choosing the part of the expression to pay attention to
+    exp_network = SequentialReinforcement()
+    exp_network.addLayer(Dense(hidden_size, len(function_library)))
+    exp_network.addLayer(Reinforce(len(function_library), std_dev=0.11))
+    exp_network.addLayer(Tanh())
+    exp_network.addOptimizer(opt)
+
+
+    model = BBFN(applying, applying_act, hidden, hidden_act,
+                output, output_act, func_network, exp_network,
+                function_library, sequence_length=2)
+
+    model.addOptimizer(opt)
+    # model.addLoss(CategoricalCrossEntropy())
+    model.addLoss(MSE())
 
     X, y = loadAddition(dataset_size, operand_size)
     #print X, y
@@ -61,4 +93,3 @@ if __name__ == "__main__":
     # output = model.forward(X)
     # for i in range(len(output)):
     #     print output[i], y[i]
-

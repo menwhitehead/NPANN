@@ -5,52 +5,6 @@ import random
 
 DATASETS_DIR = "Datasets/"
 
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
-
-def dsigmoid(x):
-    s = sigmoid(x)  # :P  ????
-    #s = x
-    return s * (1 - s)
-
-def tanh(x):
-    return np.tanh(x)
-
-def dtanh(x):
-    return 1 - np.power(x, 2)
-
-def relu(x):
-    return np.maximum(x, 0)
-
-def drelu(x):
-    # d = np.ones_like(x)
-    # d[x <= 0] = 0
-    # return d
-    return np.array(x>0, dtype=int)
-
-def softmax(x):
-    #print "X:", x
-    ex = np.exp(x)
-    #z = np.sum(ex, axis=1)
-    z = np.sum(ex)
-    #z = z.reshape(z.shape[0], 1)
-    result = ex / z
-
-    # print "SOFTMAXED:"
-    # for i in range(len(result)):
-    #     for j in range(len(result[i])):
-    #         print x[i][j],
-    #         print result[i][j]
-    #     print
-    return result
-
-def dsoftmax(x):
-    #s = softmax(x)
-    s = x
-    return s * (1 - s)
-
-
-
 def glorotUniformWeights(number_incoming, number_outgoing):
     weight_range = math.sqrt(12.0 / (number_incoming + number_outgoing))
     #self.weights = np.random.normal(0, weight_range, (number_incoming, number_outgoing))
@@ -229,17 +183,6 @@ def accuracy(model, X, y):
 
 
 
-
-activations = {'sigmoid':sigmoid,
-               'relu':relu,
-               'softmax':softmax,
-               'tanh':tanh,
-               'none':lambda(x):x}
-dactivations = {'sigmoid':dsigmoid,
-                'relu':drelu,
-                'softmax':lambda(x):x,
-                'tanh':dtanh,
-                'none':lambda(x):x}
 weight_inits = {'glorot_normal':glorotNormalWeights,
                 'glorot_uniform':glorotUniformWeights,
                 'normal':normalWeights,
