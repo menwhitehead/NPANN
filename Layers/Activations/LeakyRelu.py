@@ -14,6 +14,7 @@ class LeakyRelu(Layer):
     def backward(self, incoming_grad):
         self.incoming_grad = incoming_grad
         out = np.copy(self.outgoing_acts)
+        # SLOW
         out[out>0] = 1
         out[out<=0] = self.alpha
         self.outgoing_grad = self.incoming_grad * out

@@ -10,8 +10,6 @@ class SequentialReinforcement(Sequential):
         reward = self.loss_layer.calculateLoss(output, y)
         for layer in self.layers:
             if layer.__class__.__name__ == "Reinforce":
-                # print "MATCH", layer
-
                 layer.reward = 1 - (np.abs(reward)/np.max(reward))
 
         final_grad = self.backward(output, y)
