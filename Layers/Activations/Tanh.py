@@ -3,7 +3,7 @@ from ..Layer import Layer
 
 class Tanh(Layer):
     
-    def forward(self, x):
+    def forward(self, x, train=True):
         self.incoming_acts = x
         self.outgoing_acts = np.tanh(x)
         return self.outgoing_acts

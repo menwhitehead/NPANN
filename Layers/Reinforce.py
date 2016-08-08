@@ -12,7 +12,7 @@ class Reinforce(Layer):
         self.reward = 1
         self.stored_grad = 0
 
-    def forward(self, x):
+    def forward(self, x, train=True):
         self.incoming_acts = x
         output = np.random.normal(0, self.std_dev, x.shape)
         self.outgoing_acts = self.incoming_acts + output

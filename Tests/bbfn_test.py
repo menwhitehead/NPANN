@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
     X, y = loadAddition(dataset_size, operand_size)
     #print X, y
-    model.train(X, y, minibatch_size, epochs, verbose=True)
+    model.train(X, y, minibatch_size, epochs, verbose=1)
     # output = model.forward(X)
     # for i in range(len(output)):
     #     print output[i], y[i]

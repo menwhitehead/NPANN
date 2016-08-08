@@ -18,10 +18,10 @@ class Sequential:
     def __getitem__(self, ind):
         return self.layers[ind]
         
-    def forward(self, X):
+    def forward(self, X, train=True):
         curr_x = X
         for i in range(len(self.layers)):
-            curr_x = self.layers[i].forward(curr_x)
+            curr_x = self.layers[i].forward(curr_x, train)
         return curr_x
     
     def backward(self, output, target):

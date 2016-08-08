@@ -1,21 +1,24 @@
-import numpy as np
-import h5py
-import random
-from npann_functions import *
-from npann import *
+from misc_functions import *
+from Models.Sequential import Sequential
+from Layers.Dense import Dense
+from Layers.Activations.Sigmoid import Sigmoid
+from Layers.Activations.Tanh import Tanh
+from Layers.Activations.Relu import Relu
+from Losses.MSE import MSE
+from Optimizers.RMSProp import RMSProp
 
 
 if __name__ == "__main__":
     ann = Sequential()
-    ann.addLayer(Dense(3, 5, activation='sigmoid', weight_init="glorot_normal"))
-    ann.addLayer(Dense(5, 1, activation='sigmoid', weight_init="glorot_normal"))
+    ann.addLayer(Dense(3, 5))
+    ann.addLayer(Relu())
+    ann.addLayer(Dense(5, 1))
+    ann.addLayer(Relu())    
     ann.addLoss(MSE())
-    # ann.addOptimizer('sgd')
-    # sys.exit(1)
-    X, y = loadBreastCancer() #loadXOR()    
-    minibatch_size = 16
-    number_epochs = 2500
+    ann.addOptimizer(RMSProp())
 
-    ann.train(X, y, minibatch_size, number_epochs)
-    print ann.forward(X)
-    print y
+    X, y = loadXOR()    
+    minibatch_size = 1
+    number_epochs = 10000
+
+    ann.train(X, y, minibatch_size, number_epochs, verbose=1)

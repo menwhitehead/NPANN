@@ -16,7 +16,7 @@ class AiboPG(Layer):
         max_delta = 1.0
         self.deltas = max_delta * np.random.rand(self.weights.shape[0], self.weights.shape[1])
     
-    def forward(self, x):
+    def forward(self, x, train=True):
         self.incoming_acts = x
         ws = np.copy(self.weights)  # Make a fresh copy of the weights
         deltas = np.copy(self.deltas)
@@ -29,7 +29,8 @@ class AiboPG(Layer):
         deltas = deltas * mask
         # print "delts:", deltas
         ws += deltas
-        self.reward_table.append(deltas)  # add the chosen tiny moves to the history
+        if train:
+            self.reward_table.append(deltas)  # add the chosen tiny moves to the history
         self.outgoing_acts = x.dot(ws)
                 
         return self.outgoing_acts
@@ -119,12 +120,13 @@ class AiboPG2(Layer):
         # An index into the layer's reward table used to match up deltas and their rewards
         self.curr_index = 0
     
-    def forward(self, x):
+    def forward(self, x, train=True):
         ws = np.copy(self.weights)  # Make a fresh copy of the weights
         max_delta = 1.0
         deltas = max_delta - (2 * max_delta * np.random.rand(self.weights.shape[0], self.weights.shape[1]))
         ws += deltas
-        self.reward_table.append(deltas)  # add the chosen tiny moves to the history
+        if train:
+            self.reward_table.append(deltas)  # add the chosen tiny moves to the history
         return x.dot(ws)
     
     def backward(self, incoming_grad):
@@ -151,7 +153,8 @@ class AiboPG2(Layer):
         return incoming_grad.dot(self.weights.T)
         
         
-    def update(self):
+    def update(self, optimizer):
+        # Ignore the optimizer!!!
         #print len(self.reward_table)
         if (len(self.reward_table) >= self.max_table_size):
             # for each weight delta, sum up rewards for pos, 0, neg
@@ -215,7 +218,7 @@ class AiboPGRecurrent(Layer):
         self.deltas = max_delta * np.random.rand(self.weights.shape[0], self.weights.shape[1])
     
 
-    def forward(self, x):
+    def forward(self, x, train=True):
         self.incoming_acts = x
         ws = np.copy(self.weights)  # Make a fresh copy of the weights
         deltas = np.copy(self.deltas)
@@ -228,7 +231,8 @@ class AiboPGRecurrent(Layer):
         deltas = deltas * mask
         # print "delts:", deltas
         ws += deltas
-        self.reward_table.append(deltas)  # add the chosen tiny moves to the history
+        if train:
+            self.reward_table.append(deltas)  # add the chosen tiny moves to the history
         self.outgoing_acts = x.dot(ws)
                 
         return self.outgoing_acts
@@ -312,12 +316,13 @@ class AiboPG2Recurrent(Layer):
         # An index into the layer's reward table used to match up deltas and their rewards
         self.curr_index = 0
     
-    def forward(self, x):
+    def forward(self, x, train=True):
         ws = np.copy(self.weights)  # Make a fresh copy of the weights
         max_delta = 1.0
         deltas = max_delta - (2 * max_delta * np.random.rand(self.weights.shape[0], self.weights.shape[1]))
         ws += deltas
-        self.reward_table.append(deltas)  # add the chosen tiny moves to the history
+        if train:
+            self.reward_table.append(deltas)  # add the chosen tiny moves to the history
         return x.dot(ws)
     
     def backward(self, incoming_grad):
@@ -376,6 +381,4 @@ class AiboPG2Recurrent(Layer):
             # do update
             self.weights += self.learning_rate * final_update
             self.reset()
-
-
 

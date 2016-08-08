@@ -56,7 +56,7 @@ class Graph:
         return True
 
         
-    def forward(self, named_input_pairs):  # pairs of (name, X) for inputs
+    def forward(self, named_input_pairs, train=True):  # pairs of (name, X) for inputs
         # Set up the inputs to the entire Graph
         for input_name in named_input_pairs:
             self.setInput(input_name, named_input_pairs[input_name])
@@ -121,8 +121,11 @@ class Graph:
                         else:
                             if ly.__class__.__name__ == "Merge":
                                 layer_size = ly.number_connections
-                            else:
+                                
+                            elif hasattr(ly, 'weights'):
                                 layer_size = ly.weights.shape[1]
+                            else:
+                                layer_size = ly.incoming_acts.shape[1]
 
                             inc_grad = np.zeros((minibatch_size, layer_size))
 

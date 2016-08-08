@@ -99,6 +99,11 @@ def loadXOR():
     y = np.array([[0,1,1,0]]).T
     return X, y
 
+def loadXORTanh():
+    X = np.array([ [-1,-1,1],[-1,1,1],[1,-1,1],[1,1,1] ])
+    y = np.array([[-1,1,1,-1]]).T
+    return X, y
+
 
 def loadAddition(number_problems=100, max_number=10):
     xs = []
@@ -194,7 +199,7 @@ def accuracyBinary(model, X, y):
     else:
         inputs = X
 
-    outputs = model.forward(inputs)
+    outputs = model.forward(inputs, train=False)
     #print outputs
     outputs = np.round(outputs)
     correct = np.sum(y == outputs)
@@ -211,7 +216,7 @@ def accuracy(model, X, y):
 
     dataset_size = len(X)
     correct = 0
-    output = model.forward(inputs)
+    output = model.forward(inputs, train=False)
     for ind in range(dataset_size):
         curr_out = output[ind]
         max_ind = list(curr_out).index(np.max(curr_out))

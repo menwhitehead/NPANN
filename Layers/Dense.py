@@ -11,7 +11,7 @@ class Dense(Layer):
         self.weights = weight_inits[weight_init](self.number_incoming, self.number_outgoing)
         self.prev_update = 0.0
     
-    def forward(self, x):
+    def forward(self, x, train=True):
         self.incoming_acts = x
         self.outgoing_acts = self.incoming_acts.dot(self.weights)
         return self.outgoing_acts

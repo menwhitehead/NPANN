@@ -2,14 +2,12 @@ from misc_functions import *
 from Models.Sequential import Sequential
 from Layers.Dense import Dense
 from Layers.Dropout import Dropout
-from Layers.Tanh import Tanh
-from Layers.Relu import Relu
-from Layers.LeakyRelu import LeakyRelu
+from Layers.Activations.Tanh import Tanh
+from Layers.Activations.Relu import Relu
 from Losses.MSE import MSE
 from Optimizers.SimpleGradientDescent import SimpleGradientDescent
 from Optimizers.AdaGrad import AdaGrad
 from Optimizers.RMSProp import RMSProp
-
 
 if __name__ == "__main__":
     lr = 0.01
@@ -27,5 +25,3 @@ if __name__ == "__main__":
 
     ann.train(X, y, minibatch_size, number_epochs, verbose=2)
     print accuracyBinary(ann, X, y)
-    # print ann.forward(X)
-    # print y

@@ -17,7 +17,7 @@ class FiniteDifference(Layer):
         self.altered_table = []
         self.unaltered_table = []
     
-    def forward(self, x):
+    def forward(self, x, train=True):
         self.incoming_acts = x
 
         if self.alter_mode:        
@@ -25,7 +25,8 @@ class FiniteDifference(Layer):
             max_delta = 1.0
             deltas = max_delta - (2*max_delta * np.random.rand(self.weights.shape[0], self.weights.shape[1]))
             ws += deltas
-            self.altered_table.append(deltas)  # add the chosen tiny moves to the history
+            if train:
+                self.altered_table.append(deltas)  # add the chosen tiny moves to the history
         else:
             ws = self.weights
         
@@ -63,7 +64,8 @@ class FiniteDifference(Layer):
 
         return self.outgoing_grad.dot(self.weights.T)
         
-    def update(self):
+    def update(self, optimizer):
+        # optimizer is ignored! :P
         self.alter_mode = not self.alter_mode
         if (len(self.altered_table) == self.max_table_size) and self.alter_mode:
             grad_deltas = []

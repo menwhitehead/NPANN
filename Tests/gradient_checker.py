@@ -2,6 +2,8 @@ from misc_functions import *
 from Models.Sequential import Sequential
 from Layers.Dense import Dense
 from Layers.Dropout import Dropout
+from Layers.Activations.Tanh import Tanh
+from Optimizers.RMSProp import RMSProp
 from Losses.MSE import MSE
 
 np.random.seed(42)
@@ -9,9 +11,13 @@ np.random.seed(42)
 if __name__ == "__main__":
     lr = 0.005
     ann = Sequential()
-    ann.addLayer(Dense(9, 3, learning_rate=lr, activation='tanh', weight_init="glorot_normal"))
-    ann.addLayer(Dense(3, 1, learning_rate=lr, activation='tanh', weight_init="glorot_normal"))
+    ann.addLayer(Dense(9, 3))
+    ann.addLayer(Tanh())
+    ann.addLayer(Dense(3, 1))
+    ann.addLayer(Tanh())
     ann.addLoss(MSE())
+    ann.addOptimizer(RMSProp())
+    
     X, y = loadBreastCancerTanh() #loadXOR()    
     minibatch_size = 1
     number_epochs = 1
@@ -26,7 +32,7 @@ if __name__ == "__main__":
     ann.loss_layer.calculateGrad(output, y)
     ann.update()
     print "LAYER GRAD:", ann.layers[0].layer_grad
-    print "LAYER GRAD:", ann.layers[1].layer_grad
+    print "LAYER GRAD:", ann.layers[2].layer_grad
 
 
     numeric_grads = []

@@ -3,7 +3,7 @@ from ..Layer import Layer
 
 class Relu(Layer):
 
-    def forward(self, x):
+    def forward(self, x, train=True):
         self.incoming_acts = x
         self.outgoing_acts = np.maximum(x, 0)
         return self.outgoing_acts

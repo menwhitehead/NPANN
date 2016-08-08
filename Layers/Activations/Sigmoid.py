@@ -6,7 +6,7 @@ class Sigmoid(Layer):
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
     
-    def forward(self, x):
+    def forward(self, x, train=True):
         self.incoming_acts = x
         self.outgoing_acts = self.sigmoid(x)
         return self.outgoing_acts

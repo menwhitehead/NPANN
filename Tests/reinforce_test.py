@@ -16,10 +16,10 @@ if __name__ == "__main__":
     ann.addLayer(Reinforce(1, std_dev=0.11))
     ann.addLayer(Tanh())
     ann.addLoss(MSE())
-    ann.addOptimizer(RMSProp(learning_rate=0.01))
+    ann.addOptimizer(RMSProp())
 
     X, y = loadBreastCancerTanh()
-    minibatch_size = 10
+    minibatch_size = 16
     number_epochs = 100000
 
     ann.train(X, y, minibatch_size, number_epochs, verbose=2)

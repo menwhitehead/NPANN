@@ -9,7 +9,7 @@ np.random.seed(42)
 if __name__ == "__main__":
     lr = 0.005
     ann = Sequential()
-    ann.addLayer(Dense(3, 1, learning_rate=lr, activation='sigmoid', weight_init="glorot_normal"))
+    ann.addLayer(Dense(3, 1))
     ann.addLoss(MSE())
     X, y = loadXOR()    
     minibatch_size = 1

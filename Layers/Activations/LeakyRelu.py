@@ -6,7 +6,7 @@ class LeakyRelu(Layer):
     def __init__(self, alpha=0.2):
         self.alpha = alpha
 
-    def forward(self, x):
+    def forward(self, x, train=True):
         self.incoming_acts = x
         self.outgoing_acts = np.maximum(x, 0) + self.alpha * np.minimum(x, 0)
         return self.outgoing_acts
