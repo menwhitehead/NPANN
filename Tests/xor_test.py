@@ -7,7 +7,6 @@ from Layers.Activations.Relu import Relu
 from Losses.MSE import MSE
 from Optimizers.RMSProp import RMSProp
 
-
 if __name__ == "__main__":
     ann = Sequential()
     ann.addLayer(Dense(3, 5))
