@@ -86,6 +86,20 @@ def loadAdditionBinary(number_problems=100, operand_bits=8):
     return X, y
 
 
+def loadAdditionPlusOneBinary(number_problems=100, operand_bits=8):
+    xs = []
+    ys = []
+    for i in range(number_problems):
+        operand1 = random.randrange(2**operand_bits)
+        operand2 = random.randrange(2**operand_bits)
+        xs.append(np.append(convertToBinary(operand1, operand_bits), convertToBinary(operand2, operand_bits)))
+        ys.append(convertToBinary(operand1 + operand2 + 1, operand_bits * 2))
+    X = np.array(xs)
+    y = np.array(ys)
+
+    return X, y
+
+
 
 def loadBreastCancer():
     size = 263

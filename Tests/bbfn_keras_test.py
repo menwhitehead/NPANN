@@ -1,16 +1,11 @@
+import numpy as np
+import h5py
+import random
 from misc_functions import *
-from Models.BBFN import BBFN
-from Models.SequentialReinforcement import SequentialReinforcement
-from Layers.RecurrentDense import RecurrentDense
-from Layers.ReinforceRecurrent import ReinforceRecurrent
-from Layers.Dense import Dense
-from Layers.Activations.Relu import Relu
-from Layers.Activations.Tanh import Tanh
-from Layers.Activations.Softmax import Softmax
-from Layers.Activations.Sigmoid import Sigmoid
-from Losses.CategoricalCrossEntropy import CategoricalCrossEntropy
-from Losses.MSE import MSE
-from Optimizers.RMSProp import RMSProp
+from keras.models import Sequential
+from keras.layers.core import Dense, Dropout, Activation
+from keras.optimizers import SGD, Adam, RMSprop
+from keras.utils import np_utils
 
 
 # get an array with two 1-hot operands (representing integers) packed in
@@ -45,29 +40,40 @@ def randomResult(packed_operands):
 
 if __name__ == "__main__":
     operand_size = 4
-    hidden_size = 4*operand_size
+    hidden_size = 8
     dataset_size = 10000
-    minibatch_size = 256
+    minibatch_size = 32
     epochs = 10000
 
     # function_library = [addThem, addOne, addOne, addOne, addOne, addOne, addOne]
     function_library = [addThem, randomResult, randomResult, randomResult]
     #function_library = [addThem, randomResult]
 
-    applying = RecurrentDense(2*operand_size + len(function_library), 2*operand_size)
-    applying_act = Sigmoid()
+
+    model = Sequential()
+    model.add(Dense(2*operand_size, input_shape=(2*operand_size,)))
+    model.add(Activation('sigmoid'))
+    model.add(Dense(2*operand_size, input_shape=(2*operand_size,)))
+    model.add(Activation('sigmoid'))
+    model.add(Dense(2*operand_size, input_shape=(2*operand_size,)))
+    model.add(Activation('sigmoid'))
+    model.add(Dense(10))
+    model.add(Activation('softmax'))
+
+    applying = RecurrentDense(4*operand_size, 2*operand_size)
+    applying_act = Relu()
     hidden = RecurrentDense(hidden_size + 2*operand_size, hidden_size)
-    hidden_act = Sigmoid()
+    hidden_act = Relu()
     output = RecurrentDense(hidden_size, 2*operand_size)
-    output_act = Sigmoid()
+    output_act = Relu()
     opt = RMSProp()
 
     # Network for choosing the next function to call
     func_network = SequentialReinforcement()
     func_network.addLayer(RecurrentDense(hidden_size, len(function_library)))
-    func_network.addLayer(Sigmoid())
+    func_network.addLayer(Relu())
     func_network.addLayer(ReinforceRecurrent(len(function_library), std_dev=0.11))
-    func_network.addLayer(Sigmoid())
+    func_network.addLayer(Relu())
     func_network.addOptimizer(opt)
 
     # Network for choosing the part of the expression to pay attention to

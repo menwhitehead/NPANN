@@ -16,16 +16,16 @@ class RNN:
 
     def addOptimizer(self, optimizer):
         self.optimizer = optimizer
-        
+
     def addLayer(self, layer):
         self.layers.append(layer)
-        
+
     def addRecurrentConnection(self, layer_id1, layer_id2):
         "Add a recurrent connection between two layers. (Can be the same layer)"
         if layer_id1 not in self.output_connections:
             self.output_connections[layer_id1] = []
         self.output_connections[layer_id1].appen(layer_id2)
-        
+
         if layer_id2 not in self.reverse_connections:
             self.reverse_connections[layer_id2] = []
         self.reverse_connections[layer_id2].append(layer_id1)
@@ -36,14 +36,14 @@ class RNN:
 
         #current_exp = 0 # the part of the input expression that is being focused on
         current_hidden_state = np.zeros((X.shape[0], self.hidden_layer.weights.shape[1]))  # ??? maybe wrong size
-        
+
         layer_outputs = {}
         for s in range(self.sequence_length):
             curr_input = X
 
             for layer_id in range(len(self.layers)):
                 curr_layer = self.layers[layer_id]
-                
+
                 # Check for recurrent inputs
                 if layer_id in self.reverse_connections:
                     recurrent_data = []
@@ -55,10 +55,10 @@ class RNN:
                             recurrent_data.append('')
                     # Combine recurrent data with the normal input
                     curr_input = np.hstack(curr_input + recurrent_data)
-                
+
                 # Feed forward (either the input alone or with the recurrent data stacked on)
                 curr_input = curr_layer.forward(curr_input)
-                
+
                 # Check if this layer is used for recurrent connections
                 # If so, then remember its output for this step
                 if layer_id in self.output_connections:
@@ -75,11 +75,11 @@ class RNN:
 
         layer_outputs = {}
         for s in range(self.sequence_length):
-            for layer_id in range(len(self.layers), -1, -1):
+            for layer_id in range(len(self.layers)-1, -1, -1):
                 curr_layer = self.layers[layer_id]
-                
+
                 ##################################################NOT COMPLETE
-                
+
                 # Check for recurrent inputs
                 if layer_id in self.reverse_connections:
                     recurrent_data = []
@@ -91,10 +91,10 @@ class RNN:
                             recurrent_data.append('')
                     # Combine recurrent data with the normal input
                     curr_input = np.hstack(curr_input + recurrent_data)
-                
+
                 # Feed forward (either the input alone or with the recurrent data stacked on)
                 curr_input = curr_layer.forward(curr_input)
-                
+
                 # Check if this layer is used for recurrent connections
                 # If so, then remember its output for this step
                 if layer_id in self.output_connections:
