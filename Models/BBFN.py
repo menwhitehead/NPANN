@@ -34,6 +34,7 @@ class BBFN:
         # self.current_exp = 0 # the part of the input expression that is being focused on
         # self.current_hidden_state = np.zeros_like(self.hidden_layer)  # ??? maybe wrong size
 
+        self.function_counts = {0:0, 1:0}
 
     def addLoss(self, loss_layer):
         self.loss_layer = loss_layer
@@ -52,17 +53,25 @@ class BBFN:
 
         for s in range(self.sequence_length):
             current_func_output = self.function_net.forward(current_hidden_state)
+            #print current_func_output
             current_func_index = np.argmax(current_func_output, axis=1)
+            #print current_func_index
+
+            self.function_counts[1] += np.sum(current_func_index)
+            self.function_counts[0] += len(current_func_index) - np.sum(current_func_index)
             # print "(%d,%s)" % (s, str(current_func_index)),
 
             # Call the chosen function for each X pattern
             function_results = np.zeros((X.shape[0], X.shape[1]))
             for i in range(len(X)):
                 function_results[i] = self.function_library[current_func_index[i]](X[i])
+                # function_results[i] = self.function_library[1](X[i])
 
             # Combine the function call result along with the index of the function that was called
             # This makes it so that the network knows which function was called during the last step
             # combined_input = np.hstack((function_results, current_func_output))
+            # print "INPUT:", X
+            # print "FUNCTION_RESULTS:", function_results
 
             # Take the function results and map them to an intermediate representation using a Dense layer
             comp_result = self.applying_layer.forward(function_results)
@@ -96,10 +105,11 @@ class BBFN:
 
         # print reward
         self.function_net.layers[1].reward = reward
-        fake_grad = np.zeros(self.function_net.layers[-1].outgoing_acts.shape)
-        func_grad = self.function_net.backward(fake_grad)
 
         for i in range(self.sequence_length):
+            
+            fake_grad = np.zeros(self.function_net.layers[-1].outgoing_acts.shape)
+            func_grad = self.function_net.backward(fake_grad)
 
             # update the calculation output layer
             curr_grad = self.output_act.backward(curr_grad)
@@ -127,6 +137,9 @@ class BBFN:
         self.hidden_layer.update(self.optimizer)
         self.output_layer.update(self.optimizer)
         self.function_net.update()
+
+        self.function_net.layers[0].reset()
+        self.function_net.layers[1].reset()
 
     def iterate(self, X, y):
         output = self.forward(X)
@@ -161,7 +174,7 @@ class BBFN:
 
                     print "Epoch #%d\tError: %.4f\tAccuracy: %5.1f%% in %.2f seconds" % (i, epoch_err, acc, end_time-start_time)
                     # print "\tAccuracy: %5.1f%%" % (acc)
-
+                    print self.function_counts
 
     def accuracy2(self, X, y):
         outputs = self.forward(X)
@@ -177,7 +190,7 @@ class BBFN:
         rounded_outputs = np.round(outputs)
         correct = 0
         for i in range(sample_size):
-            # print rounded_outputs[i], y[i]
+            #print rounded_outputs[i], y[i]
             if np.array_equal(rounded_outputs[i], y[i]):
                 correct += 1
         return 100.0 * (correct / float(sample_size))

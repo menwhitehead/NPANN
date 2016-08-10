@@ -59,23 +59,29 @@ def loadXORTanh():
     return X, y
 
 
-def loadAddition(number_problems=100, max_number=10):
+def loadAdditionOneHot(number_problems=100, max_number=10):
     xs = []
     ys = []
     for i in range(number_problems):
         operand1 = random.randrange(max_number)
         operand2 = random.randrange(max_number)
-        # xs.append(np.append(convertToOneHot(operand1, max_number), convertToOneHot(operand2, max_number)))
-        # ys.append(convertToOneHot(operand1 + operand2, max_number * 2))
-        xs.append(np.append(convertToBinary(operand1, max_number), convertToBinary(operand2, max_number)))
-        ys.append(convertToBinary(operand1 + operand2, max_number * 2))
-        #print operand1, operand2, operand1 + operand2
+        xs.append(np.append(convertToOneHot(operand1, max_number), convertToOneHot(operand2, max_number)))
+        ys.append(convertToOneHot(operand1 + operand2, max_number * 2))
     X = np.array(xs)
     y = np.array(ys)
 
-    # for i in range(len(X)):
-    #     print X[i],
-    #     print y[i]
+    return X, y
+
+def loadAdditionBinary(number_problems=100, operand_bits=8):
+    xs = []
+    ys = []
+    for i in range(number_problems):
+        operand1 = random.randrange(2**operand_bits)
+        operand2 = random.randrange(2**operand_bits)
+        xs.append(np.append(convertToBinary(operand1, operand_bits), convertToBinary(operand2, operand_bits)))
+        ys.append(convertToBinary(operand1 + operand2, operand_bits * 2))
+    X = np.array(xs)
+    y = np.array(ys)
 
     return X, y
 

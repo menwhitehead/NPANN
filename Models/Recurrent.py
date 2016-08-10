@@ -5,8 +5,7 @@ from misc_functions import *
 # RNN
 class RNN:
 
-    def __init__(self,
-                sequence_length=1):
+    def __init__(self, sequence_length=1):
         self.sequence_length = sequence_length
         self.layers = []
         self.output_connections = {}  # Map outputs from layers to other layers
@@ -21,99 +20,85 @@ class RNN:
     def addLayer(self, layer):
         self.layers.append(layer)
         
-    def addConnection(self, layer_id1, layer_id2):
+    def addRecurrentConnection(self, layer_id1, layer_id2):
+        "Add a recurrent connection between two layers. (Can be the same layer)"
         if layer_id1 not in self.output_connections:
             self.output_connections[layer_id1] = []
-        self.output_connections[layer_id1] = layer_id2
+        self.output_connections[layer_id1].appen(layer_id2)
         
         if layer_id2 not in self.reverse_connections:
             self.reverse_connections[layer_id2] = []
-        self.reverse_connections[layer_id2] = layer_id1
+        self.reverse_connections[layer_id2].append(layer_id1)
 
-    # Feedforward the length of the pre-defined sequence
-    def forward(self, X):
-
-        curr_input = X
+    def forwardOnline(self, X):
+        '''Do a single forward pass through the RNN...
+        The rest of the input sequence is not yet ready...'''
 
         #current_exp = 0 # the part of the input expression that is being focused on
         current_hidden_state = np.zeros((X.shape[0], self.hidden_layer.weights.shape[1]))  # ??? maybe wrong size
-
+        
+        layer_outputs = {}
         for s in range(self.sequence_length):
-            
-            visited = []
-            curr_layer = self.layers[0]
-            visited.append(0) # Visited layer 0
-            curr_input = curr_layer.forward(curr_input)
-            for other_layer_id in self.output_connections[0]:
-                ???AH!! GRAPH CONNECTIONS!
-            
-            current_func_output = self.function_net.forward(current_hidden_state)
-            current_func_index = np.argmax(current_func_output, axis=1)
-            # print "(%d,%s)" % (s, str(current_func_index)),
+            curr_input = X
 
-            # Call the chosen function for each X pattern
-            function_results = np.zeros((X.shape[0], X.shape[1]))
-            for i in range(len(X)):
-                function_results[i] = self.function_library[current_func_index[i]](X[i])
+            for layer_id in range(len(self.layers)):
+                curr_layer = self.layers[layer_id]
+                
+                # Check for recurrent inputs
+                if layer_id in self.reverse_connections:
+                    recurrent_data = []
+                    for incoming_layer in self.reverse_connections[layer_id]:
+                        if s > 0:  # Not the first pass, so there is recurrent data available
+                            # There is a previously generated layer output that's going to this layer
+                            recurrent_data.append(layer_outputs[incoming_layer])
+                        else:
+                            recurrent_data.append('')
+                    # Combine recurrent data with the normal input
+                    curr_input = np.hstack(curr_input + recurrent_data)
+                
+                # Feed forward (either the input alone or with the recurrent data stacked on)
+                curr_input = curr_layer.forward(curr_input)
+                
+                # Check if this layer is used for recurrent connections
+                # If so, then remember its output for this step
+                if layer_id in self.output_connections:
+                    layer_outputs[layer_id] = curr_input
 
-            # Combine the function call result along with the index of the function that was called
-            # This makes it so that the network knows which function was called during the last step
-            # combined_input = np.hstack((function_results, current_func_output))
-
-            # Take the function results and map them to an intermediate representation using a Dense layer
-            comp_result = self.applying_layer.forward(function_results)
-            comp_result = self.applying_act.forward(comp_result)
-
-            # Take the comp representation and send it (along with the previous
-            # hidden state value) into the hidden layer to generate a new hidden state
-            combined_input = np.hstack((current_hidden_state, comp_result))
-            current_hidden_state = self.hidden_layer.forward(combined_input)
-            current_hidden_state = self.hidden_act.forward(current_hidden_state)
-
-            # Given the hidden state, now generate 3 values:
-            #   A calculation output (the network's predicted result of the calculation)
-            #   A new function index (the next fuction to be called)
-            #   A new expression mask (the part of the input expression to be focused upon) NOT YET IMPLEMENTED
-            calc_output = self.output_layer.forward(current_hidden_state)
-            calc_output = self.output_act.forward(calc_output)
-
-        return calc_output
+        return curr_input
 
 
-    def backward(self, output, target):
-        self.loss = self.loss_layer.calculateLoss(output, target)
-        curr_grad = self.loss_layer.calculateGrad(output, target)
+    def forwardFullSequence(self, X):
+        pass
 
-        # Update the function index-choosing layer
-        if np.array_equal(np.round(output), target):
-            reward = np.ones((len(target), self.function_net.layers[0].number_outgoing)) #1
-        else:
-            reward = np.zeros((len(target), self.function_net.layers[0].number_outgoing)) #0
 
-        # print reward
-        self.function_net.layers[1].reward = reward
-        fake_grad = np.zeros(self.function_net.layers[-1].outgoing_acts.shape)
-        func_grad = self.function_net.backward(fake_grad)
+    def backward(self, curr_grad):
 
-        for i in range(self.sequence_length):
-
-            # update the calculation output layer
-            curr_grad = self.output_act.backward(curr_grad)
-            curr_grad = self.output_layer.backward(curr_grad)
-
-            # If this isn't the first pass, then we have a curr_hidden_grad set
-            if i > 0:
-                # average the gradients???
-                curr_grad = (curr_grad + curr_hidden_grad) / 2.0
-
-            curr_hidden_grad = self.hidden_act.backward(curr_grad)
-            curr_hidden_grad = self.hidden_layer.backward(curr_hidden_grad)
-
-            # split the grad to the two incoming lines
-            curr_hidden_grad, func_calc_grad = np.split(curr_hidden_grad, [self.hidden_layer.weights.shape[1]], axis=1)
-
-            curr_grad = self.applying_act.backward(func_calc_grad)
-            curr_grad = self.applying_layer.backward(curr_grad)
+        layer_outputs = {}
+        for s in range(self.sequence_length):
+            for layer_id in range(len(self.layers), -1, -1):
+                curr_layer = self.layers[layer_id]
+                
+                ##################################################NOT COMPLETE
+                
+                # Check for recurrent inputs
+                if layer_id in self.reverse_connections:
+                    recurrent_data = []
+                    for incoming_layer in self.reverse_connections[layer_id]:
+                        if s > 0:  # Not the first pass, so there is recurrent data available
+                            # There is a previously generated layer output that's going to this layer
+                            recurrent_data.append(layer_outputs[incoming_layer])
+                        else:
+                            recurrent_data.append('')
+                    # Combine recurrent data with the normal input
+                    curr_input = np.hstack(curr_input + recurrent_data)
+                
+                # Feed forward (either the input alone or with the recurrent data stacked on)
+                curr_input = curr_layer.forward(curr_input)
+                
+                # Check if this layer is used for recurrent connections
+                # If so, then remember its output for this step
+                if layer_id in self.output_connections:
+                    layer_outputs[layer_id] = curr_input
 
         return curr_grad
 

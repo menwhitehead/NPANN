@@ -12,6 +12,8 @@ class RecurrentDense(Layer):
                  number_outgoing,
                  weight_init='glorot_uniform'
                  ):
+        self.number_incoming = number_incoming
+        self.number_outgoing = number_outgoing
         self.weights = weight_inits[weight_init](number_incoming, number_outgoing)
         self.reset()
 
