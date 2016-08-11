@@ -1,5 +1,5 @@
 from misc_functions import *
-from Layers.Recurrent.SimpleRecurrent import SimpleRecurrent
+from Layers.Recurrent.LSTM import LSTM
 from Layers.Activations.Tanh import Tanh
 from Losses.MSE import MSE
 from Optimizers.SimpleGradientDescent import SimpleGradientDescent
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     step = 0.001
 
 
-    net = SimpleRecurrent(sequence_length, operand_size, hidden_size)
+    net = LSTM(sequence_length, operand_size, hidden_size)
     act = Tanh()
     opt = RMSProp()
     seq = sineSequence(start, end, step)
