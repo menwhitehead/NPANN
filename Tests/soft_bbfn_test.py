@@ -50,7 +50,7 @@ if __name__ == "__main__":
     epochs = 10000
 
     # function_library = [addThem, randomResult, randomResult,randomResult, randomResult,randomResult, randomResult,randomResult, randomResult]
-    function_library = [addThem, addOne, randomResult]
+    function_library = [addThem, addOne, randomResult, randomResult, randomResult, randomResult, randomResult,randomResult, randomResult,randomResult, randomResult]
 
     applying_input_size = len(function_library) * operand_size * 2
     #applying_output_size = operand_size * 2
@@ -70,5 +70,6 @@ if __name__ == "__main__":
     model.addOptimizer(RMSProp())
     model.addLoss(MSE())
 
-    X, y = loadAdditionPlusOneBinary(dataset_size, operand_size)
+    # X, y = loadAdditionPlusOneBinary(dataset_size, operand_size)
+    X, y = loadAdditionBinary(dataset_size, operand_size)
     model.train(X, y, minibatch_size, epochs, verbose=2)

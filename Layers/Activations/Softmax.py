@@ -3,13 +3,13 @@ from ..Layer import Layer
 
 class Softmax(Layer):
 
-    def softmax(x):
+    def softmax(self, x):
         ex = np.exp(x)
         z = np.sum(ex)
         result = ex / z
         return result
 
-    def dsoftmax(x):
+    def dsoftmax(self, x):
         #s = softmax(x)
         s = x
         return s * (1 - s)
