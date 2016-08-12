@@ -1,0 +1,12 @@
+
+
+import json
+
+data = json.load(open(sys.argv[1]))
+o = open(sys.argv[2], 'w')
+
+for prob in data:
+    o.write(prob['sQuestion'] + ' ' + prob['lSolution'][0] + "\n")
+
+o.close()
+

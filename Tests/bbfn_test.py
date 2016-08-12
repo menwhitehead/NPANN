@@ -44,9 +44,9 @@ def randomResult(packed_operands):
 
 
 if __name__ == "__main__":
-    operand_size = 4
+    operand_size = 8
     hidden_size = 4*operand_size
-    dataset_size = 10000
+    dataset_size = 1000
     minibatch_size = 256
     epochs = 10000
 
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     func_network.addLayer(RecurrentDense(hidden_size, len(function_library)))
     func_network.addLayer(Sigmoid())
     func_network.addLayer(ReinforceRecurrent(len(function_library), std_dev=0.11))
-    func_network.addLayer(Sigmoid())
+    func_network.addLayer(Softmax())
     func_network.addOptimizer(opt)
 
     # Network for choosing the part of the expression to pay attention to
