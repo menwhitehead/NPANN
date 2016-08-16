@@ -3,7 +3,7 @@ import time
 from misc_functions import *
 
 # RNN
-class RNN:
+class GeneralRecurrent:
 
     def __init__(self, sequence_length=1):
         self.sequence_length = sequence_length

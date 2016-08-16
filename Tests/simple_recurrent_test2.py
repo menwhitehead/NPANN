@@ -1,6 +1,11 @@
 from misc_functions import *
-from Layers.Recurrent.SimpleRecurrent import SimpleRecurrent
+from Layers.Recurrent.SimpleRecurrent2 import SimpleRecurrent2
+from Layers.Dense import Dense
+
 from Layers.Activations.Tanh import Tanh
+from Layers.Activations.Softmax import Softmax
+from Layers.Activations.Sigmoid import Sigmoid
+
 from Losses.MSE import MSE
 from Optimizers.SimpleGradientDescent import SimpleGradientDescent
 from Optimizers.RMSProp import RMSProp
@@ -40,57 +45,59 @@ def getSeq(txt, length=10):
     return sqs
 
 if __name__ == "__main__":
-    operand_size = ALPHABET_LENGTH
-    hidden_size = 10
+    input_size = ALPHABET_LENGTH
+    hidden_size = 256
     output_size = ALPHABET_LENGTH
 
-    sequence_length = 20
-    number_epochs = 10000
+    sequence_length = 50
+    number_epochs = 100
+    number_tests = 1000
 
     txt = open("wiki.txt", 'r').read()
 
-    net = SimpleRecurrent(sequence_length, operand_size, hidden_size)
-    act = Tanh()
-    net2 = Dense(hidden_size, output_size)
-    act2 = Softmax()
+    net = SimpleRecurrent2(sequence_length, input_size, hidden_size, output_size, backprop_limit=10)
+    act = Softmax()
+    opt = RMSProp(learning_rate=1E-4)
 
-    opt = RMSProp()
+    for test in range(number_tests):
+        errors = []
+        for epoch in range(number_epochs):
+            seq = getSeq(txt, sequence_length + 1)
+            answer = seq[sequence_length]
+            seq = seq[:sequence_length]
 
-    for epoch in range(number_epochs):
-        seq = getSeq(txt, sequence_length + 1)
-        answer = seq[sequence_length]
-        seq = seq[:sequence_length]
-        output = net.forward(seq)
-        act_output = act.forward(output)
-        output2 = net2.forward(act_output)
-        act_output2 = act2.forward(output2)
-        # print act_output, answer
+            # print seq
+            # print seq.shape
 
-        # LOSS
-        error = answer - act_output2
+            output = net.forward(seq)
+            act_output = act.forward(output)
 
-         # error = np.repeat(error, 2)
-        #HEREHERE HEREHERE
-        act_output2_error = act2.backward(error)
+            # LOSS
+            error = answer - act_output
 
-        act_error = act.backward(error)
-        grad = net.backward(act_error)
-        net.update(opt)
+            act_error = act.backward(error)
+            grad = net.backward(act_error)
+            net.update(opt)
 
-        print "EPOCH %d: %.8f" % (epoch, np.linalg.norm(error))
+            error = np.linalg.norm(error)
+            errors.append(error)
+            errors = errors[-100:]
 
-    print "TEST"
-    number_to_generate = 100
-    curr_seq = getSeq(txt, sequence_length)
-    output = ""
-    for seq in curr_seq:
-        output += vectorToChar(seq)
-    output += " -> "
-    for i in range(number_to_generate):
-            o = net.forward(curr_seq)
-            a = act.forward(o)
-            c = vectorToChar(a)
-            output += c
-            curr_seq = np.vstack((curr_seq[1:], getVector(c)))
+            # print "EPOCH %d:%12.8f%12.8f" % (epoch, error, sum(errors)/len(errors))
 
-    print output
+        print "TEST %d" % test
+        number_to_generate = 1000
+        curr_seq = getSeq(txt, sequence_length)
+        output = ""
+        for seq in curr_seq:
+            output += vectorToChar(seq)
+        output += " -> "
+        for i in range(number_to_generate):
+                o = net.forward(curr_seq)
+                a = act.forward(o)
+                c = vectorToChar(a)
+                output += c
+                curr_seq = np.vstack((curr_seq[1:], getVector(c)))
+
+        print output
+        print
