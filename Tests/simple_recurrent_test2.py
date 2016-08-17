@@ -46,16 +46,16 @@ def getSeq(txt, length=10):
 
 if __name__ == "__main__":
     input_size = ALPHABET_LENGTH
-    hidden_size = 256
+    hidden_size = 50
     output_size = ALPHABET_LENGTH
 
-    sequence_length = 50
-    number_epochs = 100
-    number_tests = 1000
+    sequence_length = 15
+    number_epochs = 1000
+    number_tests = 10000
 
     txt = open("wiki.txt", 'r').read()
 
-    net = SimpleRecurrent2(sequence_length, input_size, hidden_size, output_size, backprop_limit=10)
+    net = SimpleRecurrent2(sequence_length, input_size, hidden_size, output_size, backprop_limit=5)
     act = Softmax()
     opt = RMSProp(learning_rate=1E-4)
 

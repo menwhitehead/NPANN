@@ -5,6 +5,12 @@ import random
 
 DATASETS_DIR = "Datasets/"
 
+def not1D(x):
+    "When arrays get to be 1D, make 'em 2D instead'"
+    if x.ndim == 1:
+        x = np.reshape(x, (1, len(x)))
+    return x
+
 def glorotUniformWeights(number_incoming, number_outgoing):
     weight_range = math.sqrt(12.0 / (number_incoming + number_outgoing))
     #self.weights = np.random.normal(0, weight_range, (number_incoming, number_outgoing))

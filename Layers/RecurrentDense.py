@@ -43,7 +43,7 @@ class RecurrentDense(Layer):
 
         # Calculate the update that would occur with this backward pass
         #update = self.incoming_acts[-1].T.dot(self.outgoing_grads[-1])
-        layer_grad = self.incoming_acts[-1].T.dot(self.incoming_grads[-1])
+        layer_grad = not1D(self.incoming_acts[-1]).T.dot(not1D(self.incoming_grads[-1]))
 
         # Add the update on to the weight_update
         self.weight_update += layer_grad
