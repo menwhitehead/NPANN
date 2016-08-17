@@ -1,10 +1,10 @@
 from misc_functions import *
 from ..Layer import Layer
-from ..RecurrentDense import RecurrentDense
+from DenseRecurrent import DenseRecurrent
 from ..Activations.Sigmoid import Sigmoid
 from ..Activations.Tanh import Tanh
 
-class SimpleRecurrent2(Layer):
+class Recurrent(Layer):
 
     def __init__(self,
                  sequence_length,
@@ -19,19 +19,19 @@ class SimpleRecurrent2(Layer):
         self.number_hidden = number_hidden
         self.number_outgoing = number_outgoing
 
-        self.input_layer = RecurrentDense(number_incoming, number_hidden)
+        self.input_layer = DenseRecurrent(number_incoming, number_hidden)
         self.input_act_layer = Tanh()
-        self.hidden_layer = RecurrentDense(number_hidden, number_hidden)
+        self.hidden_layer = DenseRecurrent(number_hidden, number_hidden)
         self.hidden_act_layer = Tanh()
-        self.output_layer = RecurrentDense(number_hidden, number_outgoing)
+        self.output_layer = DenseRecurrent(number_hidden, number_outgoing)
         self.output_act_layer = Tanh()
 
         self.backprop_limit = min(backprop_limit, self.sequence_length)
         self.reset()
 
+
     # Reset all remembered activations and gradients
     def reset(self):
-        # All activation and gradients are remembered for multiple passes
         self.incoming_acts = []
         self.hidden_acts = []
         self.outgoing_acts = []
@@ -39,15 +39,14 @@ class SimpleRecurrent2(Layer):
         self.outgoing_grads = []
         self.prev_activation = np.zeros(self.number_hidden)
 
+
     def forward(self, x, train=True):
         for i in range(self.sequence_length):
-            val = x[i]
-            self.incoming_acts.append(val)
+            self.incoming_acts.append(x[i])
 
-            input_act = self.input_layer.forward(val)
+            input_act = self.input_layer.forward(x[i])
             input_act = self.input_act_layer.forward(input_act)
 
-            # print self.hidden_layer.weights.shape, self.prev_activation.shape
             hidden_act = self.hidden_layer.forward(self.prev_activation)
             hidden_act = self.hidden_act_layer.forward(hidden_act)
 
@@ -61,7 +60,6 @@ class SimpleRecurrent2(Layer):
 
 
     def backward(self, curr_grad):
-
         output_grad = self.output_act_layer.backward(curr_grad)
         curr_grad = self.output_layer.backward(output_grad)
 
@@ -78,11 +76,12 @@ class SimpleRecurrent2(Layer):
         return curr_grad
 
 
+    # Remove the used up activations
     def removeLastActs(self):
-        # Remove the used up activations
         self.incoming_acts = self.incoming_acts[:-1]
         self.hidden_acts = self.hidden_acts[:-1]
         self.outgoing_acts = self.outgoing_acts[:-1]
+
 
     def update(self, optimizer):
         self.input_layer.update(optimizer)

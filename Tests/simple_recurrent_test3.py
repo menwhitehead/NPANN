@@ -1,5 +1,7 @@
 from misc_functions import *
-from Layers.Recurrent.SimpleRecurrent2 import SimpleRecurrent2
+# from Layers.Recurrent.SimpleRecurrent2 import SimpleRecurrent2
+from Layers.Recurrent.Recurrent import Recurrent
+
 from Layers.Activations.Tanh import Tanh
 from Layers.Activations.Relu import Relu
 from Layers.Activations.Sigmoid import Sigmoid
@@ -29,7 +31,7 @@ if __name__ == "__main__":
     end = 6 * math.pi #3.14
     step = 0.01
 
-    net = SimpleRecurrent2(sequence_length, input_size, hidden_size, output_size, backprop_limit=5)
+    net = Recurrent(sequence_length, input_size, hidden_size, output_size, backprop_limit=5)
     # act = Tanh()
     opt = RMSProp(learning_rate=1E-2)
     seq = sineSequence(start, end, step)
