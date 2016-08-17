@@ -20,10 +20,10 @@ def sineSequence(start, end, step):
 
 if __name__ == "__main__":
     input_size = 1
-    hidden_size = 3
+    hidden_size = 30
     output_size = 1
     sequence_length = 3
-    number_epochs = 1000
+    number_epochs = 10000
 
     start = 0.0
     end = 6 * math.pi #3.14

@@ -63,20 +63,17 @@ class SimpleRecurrent2(Layer):
     def backward(self, curr_grad):
 
         output_grad = self.output_act_layer.backward(curr_grad)
-        # print "BACK:", self.output_layer.incoming_acts[-1].shape, output_grad.shape
-        output_grad = self.output_layer.backward(output_grad)
+        curr_grad = self.output_layer.backward(output_grad)
 
         for i in range(self.backprop_limit):
 
-            input_grad = self.input_act_layer.backward(output_grad)
+            input_grad = self.input_act_layer.backward(curr_grad)
             input_grad = self.input_layer.backward(input_grad)
 
-            hidden_grad = self.hidden_act_layer.backward(output_grad)
-            hidden_grad = self.hidden_layer.backward(hidden_grad)
+            hidden_grad = self.hidden_act_layer.backward(curr_grad)
+            curr_grad = self.hidden_layer.backward(hidden_grad)
 
             self.removeLastActs()
-
-            curr_grad = hidden_grad
 
         return curr_grad
 
