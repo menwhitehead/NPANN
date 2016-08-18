@@ -65,13 +65,12 @@ class Recurrent(Layer):
 
         for i in range(self.backprop_limit):
 
-            input_grad = self.input_act_layer.backward(curr_grad)
-            input_grad = self.input_layer.backward(input_grad)
-
-            hidden_grad = self.hidden_act_layer.backward(curr_grad)
-            curr_grad = self.hidden_layer.backward(hidden_grad)
-
-            self.removeLastActs()
+            # input_grad = self.input_act_layer.backward(curr_grad)
+            # input_grad = self.input_layer.backward(input_grad)
+            #
+            # hidden_grad = self.hidden_act_layer.backward(curr_grad)
+            # curr_grad = self.hidden_layer.backward(hidden_grad)
+            pass
 
         return curr_grad
 

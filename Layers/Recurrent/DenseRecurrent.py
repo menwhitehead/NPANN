@@ -10,7 +10,8 @@ class DenseRecurrent(Layer):
     def __init__(self,
                  number_incoming,
                  number_outgoing,
-                 weight_init='glorot_uniform'
+                #  weight_init='glorot_uniform'
+                weight_init='normal'
                  ):
         self.number_incoming = number_incoming
         self.number_outgoing = number_outgoing
@@ -37,11 +38,12 @@ class DenseRecurrent(Layer):
 
     def backward(self, incoming_grad):
         self.incoming_grads.append(incoming_grad)
+        # print self.incoming_grads[-1].shape, self.weights.T.shape
         self.outgoing_grads.append(self.incoming_grads[-1].dot(self.weights.T))
 
         # Calculate the update that would occur with this backward pass
         # and add it on to the weight update
-        self.weight_update += not1D(self.incoming_acts[-1]).T.dot(not1D(self.incoming_grads[-1]))
+        self.weight_update += not1DHorizontal(self.incoming_acts[-1]).T.dot(not1DHorizontal(self.incoming_grads[-1]))
         self.removeLastActs()
 
         return self.outgoing_grads[-1]
