@@ -5,10 +5,16 @@ import random
 
 DATASETS_DIR = "Datasets/"
 
-def not1D(x):
+def not1DHorizontal(x):
     "When arrays get to be 1D, make 'em 2D instead'"
     if x.ndim == 1:
         x = np.reshape(x, (1, len(x)))
+    return x
+
+def not1DVertical(x):
+    "When arrays get to be 1D, make 'em 2D instead'"
+    if x.ndim == 1:
+        x = np.reshape(x, (len(x), 1))
     return x
 
 def glorotUniformWeights(number_incoming, number_outgoing):

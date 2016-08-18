@@ -1,5 +1,4 @@
 from misc_functions import *
-# from Layers.Recurrent.SimpleRecurrent2 import SimpleRecurrent2
 from Layers.Recurrent.Recurrent import Recurrent
 
 from Layers.Activations.Tanh import Tanh
@@ -22,7 +21,7 @@ def sineSequence(start, end, step):
 
 if __name__ == "__main__":
     input_size = 1
-    hidden_size = 30
+    hidden_size = 3
     output_size = 1
     sequence_length = 3
     number_epochs = 10000
@@ -32,7 +31,6 @@ if __name__ == "__main__":
     step = 0.01
 
     net = Recurrent(sequence_length, input_size, hidden_size, output_size, backprop_limit=5)
-    # act = Tanh()
     opt = RMSProp(learning_rate=1E-2)
     seq = sineSequence(start, end, step)
     errors = []

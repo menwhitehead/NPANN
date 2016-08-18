@@ -9,7 +9,7 @@ class Dense(Layer):
         self.number_incoming = number_incoming
         self.number_outgoing = number_outgoing
         self.weights = weight_inits[weight_init](self.number_incoming, self.number_outgoing)
-    
+
     def forward(self, x, train=True):
         self.incoming_acts = x
         self.outgoing_acts = self.incoming_acts.dot(self.weights)
@@ -22,6 +22,5 @@ class Dense(Layer):
 
     def update(self, optimizer):
         self.layer_grad = self.incoming_acts.T.dot(self.incoming_grad)
-        # self.layer_grad /= len(self.incoming_acts)
         layer_update = optimizer.getUpdate(self, self.layer_grad)
         self.weights += layer_update
