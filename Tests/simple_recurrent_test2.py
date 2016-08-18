@@ -1,5 +1,5 @@
 from misc_functions import *
-from Layers.Recurrent.SimpleRecurrent2 import SimpleRecurrent2
+from Layers.Recurrent.Recurrent import Recurrent
 from Layers.Dense import Dense
 
 from Layers.Activations.Tanh import Tanh
@@ -46,16 +46,16 @@ def getSeq(txt, length=10):
 
 if __name__ == "__main__":
     input_size = ALPHABET_LENGTH
-    hidden_size = 50
+    hidden_size = 150
     output_size = ALPHABET_LENGTH
 
-    sequence_length = 15
+    sequence_length = 25
     number_epochs = 1000
-    number_tests = 10000
+    number_tests = 100000
 
     txt = open("wiki.txt", 'r').read()
 
-    net = SimpleRecurrent2(sequence_length, input_size, hidden_size, output_size, backprop_limit=5)
+    net = Recurrent(sequence_length, input_size, hidden_size, output_size, backprop_limit=5)
     act = Softmax()
     opt = RMSProp(learning_rate=1E-4)
 
