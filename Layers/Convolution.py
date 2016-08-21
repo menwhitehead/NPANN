@@ -50,6 +50,8 @@ class Convolution(Layer):
         #     print "layer update:", layer_update.shape
         #     self.weights[filter_number] += layer_update
 
+        #### SEEMS FISHY///...../////
+
         self.layer_grad = np.mean(self.incoming_acts * self.incoming_grad, axis=(0, 2, 3))
         # print "layer grad:", self.layer_grad.shape
         layer_update = optimizer.getUpdate("convfilter", self.layer_grad)

@@ -12,7 +12,7 @@ if __name__ == "__main__":
     lr = 0.01
     image_width = 28
     image_height = 28
-    number_filters = 2
+    number_filters = 1
     number_classes = 10
 
     ann = Sequential()
