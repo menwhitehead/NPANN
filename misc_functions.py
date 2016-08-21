@@ -160,6 +160,7 @@ def loadMNIST():
         if maxes[i] == 0:
             maxes[i] = 0.1
     X *= 1/maxes
+    # print X.shape
 
     raw_y = np.array([f['t_train'][:size]]).T
 
@@ -173,7 +174,20 @@ def loadMNIST():
 
     return X, y
 
+def loadMNIST2D():
+    X, y = loadMNIST()
+    # Convert the X into 2-D images
 
+    width = 28
+    height = 28
+
+    number_samples = len(X)
+
+    X = np.reshape(X, (number_samples, 1, width, height))
+
+    print "MNIST2D Dataset LOADED"
+
+    return X, y
 
 
 # Testing model accuracies

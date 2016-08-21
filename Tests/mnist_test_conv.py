@@ -1,6 +1,8 @@
 from misc_functions import *
 from Models.Sequential import Sequential
 from Layers.Dense import Dense
+from Layers.Convolution import Convolution
+from Layers.Flatten import Flatten
 from Layers.Activations.Sigmoid import Sigmoid
 from Losses.CategoricalCrossEntropy import CategoricalCrossEntropy
 from Optimizers.RMSProp import RMSProp
@@ -8,20 +10,26 @@ from Optimizers.RMSProp import RMSProp
 
 if __name__ == "__main__":
     lr = 0.01
-    number_hidden = 10
+    image_width = 28
+    image_height = 28
+    number_filters = 2
+    number_classes = 10
+
     ann = Sequential()
-    ann.addLayer(Dense(784, number_hidden))
+    ann.addLayer(Convolution(image_width, image_height, number_filters))
     ann.addLayer(Sigmoid())
-    ann.addLayer(Dense(number_hidden, 10))
+    ann.addLayer(Flatten())
+    ann.addLayer(Dense(number_filters * image_width * image_height, number_classes))
     ann.addLayer(Sigmoid())
     ann.addLoss(CategoricalCrossEntropy())
     ann.addOptimizer(RMSProp(learning_rate = lr))
 
-    X, y = loadMNIST()
+    X, y = loadMNIST2D()
     dataset_size = len(X)
+    # print X[0]
 
     number_epochs = 1000
-    accuracy_report_freq = 5
+    accuracy_report_freq = 1
     minibatch_size = 128
 
     for i in range(number_epochs / accuracy_report_freq):
