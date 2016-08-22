@@ -54,17 +54,6 @@ class Convolution(Layer):
             output[f] = self.convolve(image, self.weights[f])
         return output
 
-
-    def bprop(self, output_grad):
-        input_grad = np.empty(self.last_input_shape)
-        self.dW = np.empty(self.W.shape)
-        bprop_conv_bc01(self.last_input, output_grad, self.W, input_grad,
-                        self.dW)
-        n_imgs = output_grad.shape[0]
-        self.db = np.sum(output_grad, axis=(0, 2, 3)) / (n_imgs)
-        self.dW -= self.weight_decay*self.W
-        return input_grad
-
     def forward(self, x, train=True):
         self.incoming_acts = x
         self.outgoing_acts = self.convolveAllFilters(x)
