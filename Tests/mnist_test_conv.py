@@ -12,7 +12,7 @@ if __name__ == "__main__":
     lr = 0.01
     image_width = 28
     image_height = 28
-    number_filters = 1
+    number_filters = 2
     number_classes = 10
 
     ann = Sequential()
@@ -29,8 +29,8 @@ if __name__ == "__main__":
     # print X[0]
 
     number_epochs = 1000
-    accuracy_report_freq = 1
-    minibatch_size = 128
+    accuracy_report_freq = 10
+    minibatch_size = 1
 
     for i in range(number_epochs / accuracy_report_freq):
         ann.train(X, y, minibatch_size, accuracy_report_freq, verbose=1)

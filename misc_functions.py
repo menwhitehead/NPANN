@@ -151,7 +151,7 @@ def loadBreastCancerTanh():
 
 
 def loadMNIST():
-    size = 50000
+    size = 1000
     f = h5py.File(DATASETS_DIR + "mnist.hdf5", 'r')
     X = f['x_train'][:size]
 
