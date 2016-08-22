@@ -20,7 +20,9 @@ class Dense(Layer):
         self.outgoing_grad = self.incoming_grad.dot(self.weights.T)
         return self.outgoing_grad
 
+    def getLayerDerivatives(self):
+        return self.incoming_acts.T.dot(self.incoming_grad)
+
     def update(self, optimizer):
-        self.layer_grad = self.incoming_acts.T.dot(self.incoming_grad)
-        layer_update = optimizer.getUpdate(self, self.layer_grad)
+        layer_update = optimizer.getUpdate(self, self.getLayerDerivatives())
         self.weights += layer_update
