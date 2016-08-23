@@ -40,9 +40,8 @@ class GRU(Layer):
 
     def forward(self, x, train=True):
         for i in range(self.sequence_length):
-            val = x[i]
-            self.incoming_acts.append(val)
-            self.combined_acts.append(np.hstack((self.prev_activation, val)))
+            self.incoming_acts.append(x[i])
+            self.combined_acts.append(np.hstack((self.prev_activation, x[i])))
 
             r = self.reset_layer.forward(self.combined_acts[-1])
             r = self.reset_act_layer.forward(r)
@@ -50,7 +49,7 @@ class GRU(Layer):
             z = self.update_layer.forward(self.combined_acts[-1])
             z = self.update_act_layer.forward(z)
 
-            resetted_input = np.hstack((r * self.prev_activation, val))
+            resetted_input = np.hstack((r * self.prev_activation, x[i]))
 
             h_cand = self.hidden_layer.forward(resetted_input)
             h_cand = self.hidden_act_layer.forward(h_cand)

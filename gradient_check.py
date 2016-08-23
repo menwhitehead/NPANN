@@ -42,14 +42,14 @@ def testDense():
     down_error = iterate(s, X, y)
 
     print "DENSE LAYER GRAD TEST:"
-    print "numeric grad:  ", ((up_error - down_error) / (2 * epsilon))[0][0]
-    print "Backprop grad:", layer_grad[0][0]
+    print "numeric grad:  %11.8f" % ((up_error - down_error) / (2 * epsilon))[0][0]
+    print "Backprop grad: %11.8f" % layer_grad[0][0]
     print
 
 def testConvolution():
     img_width = 17
     img_height = 17
-    number_filters = 3
+    number_filters = 1
     number_classes = 10
     batch_size = 1
 
@@ -68,7 +68,7 @@ def testConvolution():
 
     first_error = iterate(s, X, y)
     # layer_grad = layer.incoming_acts.T.dot(layer.incoming_grad)
-    layer_grad = layer.getLayerDerivatives()[0]
+    layer_grad = layer.getLayerDerivatives()
 
     epsilon = 1E-4
     layer.weights[0][0][0] += epsilon
@@ -77,8 +77,8 @@ def testConvolution():
     down_error = iterate(s, X, y)
 
     print "CONVOLUTION LAYER GRAD TEST:"
-    print "numeric grad: ", ((up_error - down_error) / (2 * epsilon))[0][0]
-    print "Backprop grad:", layer_grad
+    print "numeric grad:  %11.8f" % ((up_error - down_error) / (2 * epsilon))[0][0]
+    print "Backprop grad: %11.8f" % layer_grad[0][0][0]
     print
 
 if __name__=="__main__":
