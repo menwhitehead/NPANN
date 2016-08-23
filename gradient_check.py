@@ -17,6 +17,25 @@ def iterate(s, X, y):
     #s.update()
     return loss
 
+def testSigmoid():
+    input_dim = 16
+    output_dim = 1
+    batch_size = 1
+
+    layer = Sigmoid()
+
+    X = np.random.rand(batch_size, input_dim)
+    y = np.random.rand(batch_size, output_dim)
+
+    epsilon = 1E-4
+    up_error = layer.forward(X + epsilon)
+    down_error = layer.forward(X - epsilon)
+
+    print "SIGMOID LAYER GRAD TEST:"
+    print "numeric grad:  %11.8f" % ((up_error - down_error) / (2 * epsilon))[0][0]
+    print "Backprop grad: %11.8f" % layer.backward(1)[0][0]
+    print
+
 def testDense():
     input_dim = 8
     output_dim = 1
@@ -47,24 +66,31 @@ def testDense():
     print
 
 def testConvolution():
-    img_width = 17
-    img_height = 17
+    img_width = 89
+    img_height = img_width
     number_filters = 1
-    number_classes = 10
+    number_classes = number_filters*img_width*img_height
     batch_size = 1
 
     layer = Convolution(img_width, img_height, number_filters)
+
+
     s = Sequential()
     s.addLayer(layer)
     s.addLayer(Flatten())
     s.addLayer(Sigmoid())
-    s.addLayer(Dense(number_filters*img_width*img_height, number_classes))
-    s.addLayer(Sigmoid())
+    # s.addLayer(Dense(number_filters*img_width*img_height, number_classes))
+    # s.addLayer(Sigmoid())
     s.addLoss(MSE())
     s.addOptimizer(RMSProp())
 
     X = np.random.rand(batch_size, number_filters, img_width, img_height)
     y = np.random.rand(batch_size, number_classes)
+
+    # print layer.weights
+    # print X
+    # print layer.npconvolve(X, layer.weights)
+
 
     first_error = iterate(s, X, y)
     # layer_grad = layer.incoming_acts.T.dot(layer.incoming_grad)
@@ -82,5 +108,6 @@ def testConvolution():
     print
 
 if __name__=="__main__":
+    testSigmoid()
     testDense()
     testConvolution()
