@@ -10,14 +10,10 @@ class Dropout(Layer):
 
     def forward(self, x, train=True):
         if train:
-            #self.current_mask = np.random.binomial([np.ones((self.incoming_size, self.outgoing_size))],1-self.percentage)[0]
             self.current_mask = np.random.binomial(1, self.percentage, size=(self.incoming_size, )) / self.percentage
-            return self.current_mask * x #x * self.current_mask
+            return self.current_mask * x
         else:
             return x
 
     def backward(self, incoming_grad):
         return self.current_mask * incoming_grad
-
-    def update(self):
-        pass

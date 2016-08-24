@@ -191,16 +191,14 @@ def loadMNIST2D():
 
 
 # Testing model accuracies
-def accuracyBinary(model, X, y):
-
+def accuracyBinary(model, X, y, train=False):
     # Make a dictionary of inputs if the model is a Graph
     if model.__class__.__name__ == "Graph":
         inputs = {"input1": X}
     else:
         inputs = X
 
-    outputs = model.forward(inputs, train=False)
-    #print outputs
+    outputs = model.forward(inputs, train=train)
     outputs = np.round(outputs)
     correct = np.sum(y == outputs)
     return 100.0 * (correct / float(len(X)))
