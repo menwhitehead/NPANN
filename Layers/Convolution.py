@@ -41,6 +41,7 @@ class Convolution(Layer):
         self.outgoing_acts = self.convolve(x, self.weights)
         return self.outgoing_acts
 
+    #### THIS HASN'T BEEN ERROR-CHECKED YET!!!!
     def backward(self, incoming_grad):
         self.incoming_grad = incoming_grad
         roted = np.rot90(np.copy(self.weights), 2)

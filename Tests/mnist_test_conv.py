@@ -7,7 +7,6 @@ from Layers.Activations.Sigmoid import Sigmoid
 from Losses.CategoricalCrossEntropy import CategoricalCrossEntropy
 from Optimizers.RMSProp import RMSProp
 
-
 if __name__ == "__main__":
     lr = 1E-4
     image_width = 28
