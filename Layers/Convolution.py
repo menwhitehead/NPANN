@@ -1,5 +1,5 @@
 from misc_functions import *
-from scipy.signal import convolve2d
+from scipy.signal import convolve2d, correlate2d
 from Layer import Layer
 
 class Convolution(Layer):
@@ -27,29 +27,38 @@ class Convolution(Layer):
                 filter_outputs = []
                 for filter_number in range(len(filters)):
                     conv_filter = filters[filter_number]
-                    filter_outputs.append(convolve2d(img[channel_number], conv_filter, mode="same"))
+                    #filter_outputs.append(convolve2d(img[channel_number], conv_filter, mode="same"))
+                    filter_outputs.append(correlate2d(img[channel_number], conv_filter, mode="same"))
                 outputs.append(filter_outputs)
         outputs = np.array(outputs)
         return outputs
 
     def baseConvolve(self, arr1, arr2):
+        print "CONVING :"
+        print arr1
+        print arr2
         return np.sum(arr1 * arr2)
 
     def convolve(self, image, filt):
         "Use filt as a convolution filter throughout image"
+        print "FILT:", filt
         output = np.zeros_like(image)
-        image = np.pad(image, 1, 'constant', constant_values=(0,))
-        for i in range(1, image.shape[2]-1):
-            for j in range(1, image.shape[3]-1):
-                tmp_arr = image[:, :, i-1:i+2, j-1:j+2]  # TODO: variable size kernels!
+        image = np.pad(image, 1, 'constant')
+        for i in range(1, image.shape[0]-1):
+            for j in range(1, image.shape[1]-1):
+                print "\t", i, j
+                tmp_arr = image[i-1:i+2, j-1:j+2]  # TODO: variable size kernels!
+                # assert(tmp_arr.shape == filt.shape)
                 convolution = self.baseConvolve(tmp_arr, filt)
-                output[:, :, i-1, j-1] = convolution
+                print convolution
+                output[i-1, j-1] = convolution
+        print "CONV:", output
         return output
 
     def convolveAll(self, arr1, arr2):
         output = np.zeros((arr1.shape[0], len(arr2), arr1.shape[2], arr1.shape[3]))
         for j in range(len(arr2)):
-            output[j] = self.convolve(arr1, arr2[j])
+            output[j] = self.convolve(arr1[0][0], arr2[j])
         return output
 
     def convolveAllFilters(self, image):
@@ -62,7 +71,7 @@ class Convolution(Layer):
     def forward(self, x, train=True):
         self.incoming_acts = x
         self.outgoing_acts = self.npconvolve(x, self.weights)
-        # print "FORWARD SHAPES:", self.incoming_acts.shape, self.outgoing_acts.shape
+        # self.outgoing_acts = self.convolveAll(x, self.weights)
         return self.outgoing_acts
 
     def backward(self, incoming_grad):
@@ -79,110 +88,52 @@ class Convolution(Layer):
         # print "OUTGOING:", self.outgoing_grad
         return self.outgoing_grad
 
-    def getLayerDerivatives(self):
-        # return np.sum(self.incoming_acts * self.incoming_grad, axis=(0, 2, 3))
-        # outs = self.convolveAll(self.incoming_acts, self.incoming_grad)
-        # self.incoming_acts, self.incoming_grad, axis=(0, 2, 3))
-
-        # self.incoming_grad = np.rot90(self.incoming_grad, 2)
-
-        # img_h = self.incoming_acts.shape[2]
-        # img_w = self.incoming_acts.shape[3]
-        # filters_grad = np.zeros_like(self.weights)
-        # for h in range(self.kernel_size):
-        #     for v in range(self.kernel_size):
-        #         prev_a_window = self.incoming_acts[0, 0, v:v+img_h-self.kernel_size+1,
-        #                                                  h:h+img_w -self.kernel_size+1]
-        #         delta_window  =  self.incoming_grad[0, 0, v:v+img_h-self.kernel_size+1,
-        #                                                   h:h+img_w -self.kernel_size+1]
-        #         filters_grad[0, h, v] = np.sum(prev_a_window * delta_window)
-
-        # filters_grad = convolve2d(self.incoming_acts[0][0] * self.incoming_grad[0][0], np.ones((self.kernel_size, self.kernel_size)), mode="same")
-
-        np.set_printoptions(linewidth=1000)
-
-# (flipall(self.incoming_acts[0][0]), self.outgoing_grad[0][0], 'valid') / self.incoming_grad.shape[3];
-        # flipped = np.rot90(np.copy(self.incoming_acts[0][0]), 2)
-        flipped = np.rot90(np.copy(self.incoming_grad[0][0]), 2)
-        # filters_grad = convolve2d(self.incoming_acts[0][0], flipped, mode="valid") / (self.incoming_grad.shape[2] * self.incoming_grad.shape[3])
-        filters_grad = convolve2d(self.incoming_acts[0][0], flipped, mode="valid") / (self.incoming_grad.shape[2] * self.incoming_grad.shape[3])
-        print filters_grad
-
-
-        # print "acts:"
-        # for a in self.incoming_acts[0][0]:
-        #     print str(a)
-        # print "GRAD:"
-        # for g in self.incoming_grad[0][0]:
-        #     print g
-        # sys.e
-        #
-        # n_imgs = self.incoming_grad.shape[0]
-        #
-        # n_channels_convout = self.number_filters
-        # n_channels_imgs = self.incoming_acts.shape[1]
-        # # print n_channels_imgs
-        # fil_h = self.kernel_size
-        # fil_w = self.kernel_size
-        # fil_mid_h = fil_h / 2
-        # fil_mid_w = fil_w / 2
-        #
-
-        # img_grad = np.zeros_like(self.outgoing_grad)
-        #
-        # padded = np.pad(np.copy(self.incoming_acts[0][0]), 1, mode="constant")
-        # # print "P1:", padded
+    
+    def getLayerDerivativesWORKING(self):
+        result = np.zeros_like(self.weights)
+        padded = np.pad(np.copy(self.incoming_acts[0][0]), 1, mode="constant")
+        print padded
+        print self.incoming_grad
         # padded = np.rot90(padded, 2)
-        # # print "P2:", padded
-        # # print padded
+        for center_y in range(self.incoming_grad.shape[2]):
+            for center_x in range(self.incoming_grad.shape[3]):
+                print center_y, center_x
+                g = self.incoming_grad[0, 0, center_y, center_x]
+                print "G::", g
+                for k1 in range(-1, 2):
+                    for k2 in range(-1, 2):
+                        #if center_y+k1 >= 0 and center_y+k1 < padded.shape[0]:
+                            # if center_x+k2 >= 0 and center_x+k2 < padded.shape[1]:
+                                # print "\t", k1+1, k2+1, center_y+k1, center_x+k2
+                                inc = padded[center_y+k1+1, center_x+k2+1]
+                                print "\t\t", inc
+                                result[0, k1+1, k2+1] += g * inc
 
-        # print "GRAD:", self.incoming_grad
-        # print "INC:", self.incoming_acts
-        #
-        # padded = np.pad(np.copy(self.incoming_acts[0][0]), 1, mode="constant")
-        # # padded = np.rot90(padded, 2)
-        # img_h = padded.shape[0]
-        # img_w = padded.shape[1]
-        # filters_grad = np.zeros_like(self.weights)
-        # first = 0
-        # for y in range(img_h-self.kernel_size):
-        #     for x in range(img_w-self.kernel_size):
-        #         inc = self.incoming_grad[0, 0, y+1, x+1]
-        #         chunk = padded[y:y+self.kernel_size, x:x+self.kernel_size]
-        #         filters_grad[0, :, :] += chunk * inc
-
-                # for fy in range(self.kernel_size):
-                #     for fx in range(self.kernel_size):
-                #         # print "*" * 60
-                #         # print y, x, fx, fy
-                #         p = padded[y+fy, x+fx]
-                #         # print p
-                #         # print inc
-                #         tmp = p * inc
-                #         # print tmp
-                #         # for fily in range(-1, 2):
-                #         #     for filx in range(-1, 2):
-                #         #         filters_grad[0, fily, filx] += padded[y+fily, x+filx] * self.incoming_grad[0, 0, y, x]
-                #         # tmp = self.incoming_acts[0, 0, y-1:y+2, x-1:x+2] * self.incoming_grad[0, 0, y, x]
-                #                 # tmp = padded[y+fy, x+fx] * self.incoming_grad[0, 0, y-1, x-1]
-                #
-                #         filters_grad[0, fy, fx] += tmp
-                #         # first += tmp
-
-
-                # for y_off in range(-1, 2):
-                #     for x_off in range(-1, 2):
-                #         img_y = y + y_off
-                #         img_x = x + x_off
-                #         fil_y = fil_mid_w + y_off
-                #         fil_x = fil_mid_h + x_off
-                #         print "PROCESSING: ", x, y, img_x, img_y, fil_x, fil_y
-                #         filters_grad[0, fil_y, fil_x] += self.incoming_acts[0, 0, img_y, img_x] * self.incoming_grad[0, 0, y, x]
-        #filters_grad /= n_imgs
-        # print "FIRST:", first
-        print "FILTERS GRAD:", filters_grad
+        print "DERIVES:"
+        print result
+        return result
+    
+    def getLayerDerivatives(self):
+        filters_grad2 = np.zeros_like(self.weights)
+        padded = np.pad(np.copy(self.incoming_acts[0][0]), 1, mode="constant")
+        filters_grad2[0] = correlate2d(padded, self.incoming_grad[0][0], mode="valid")
+        return filters_grad2
+        
+    def getLayerDerivativesLoopy(self):
+        padded = np.pad(np.copy(self.incoming_acts[0][0]), 1, mode="constant")
+        img_h = padded.shape[0]
+        img_w = padded.shape[1]
+        filters_grad = np.zeros_like(self.weights)
+        for y in range(self.incoming_grad.shape[2]):
+            for x in range(self.incoming_grad.shape[3]):
+                inc = self.incoming_grad[0, 0, y, x]
+                chunk = padded[y:y+self.kernel_size, x:x+self.kernel_size]
+                filters_grad[0, :, :] += chunk * inc
+                
+        
+                
         return filters_grad
-
+    
 
     def update(self, optimizer):
         # for filter_number in range(len(self.weights)):

@@ -66,10 +66,10 @@ def testDense():
     print
 
 def testConvolution():
-    img_width = 89
+    img_width = 17
     img_height = img_width
     number_filters = 1
-    number_classes = number_filters*img_width*img_height
+    number_classes = 1#number_filters*img_width*img_height
     batch_size = 1
 
     layer = Convolution(img_width, img_height, number_filters)
@@ -79,8 +79,8 @@ def testConvolution():
     s.addLayer(layer)
     s.addLayer(Flatten())
     s.addLayer(Sigmoid())
-    # s.addLayer(Dense(number_filters*img_width*img_height, number_classes))
-    # s.addLayer(Sigmoid())
+    s.addLayer(Dense(number_filters*img_width*img_height, number_classes))
+    s.addLayer(Sigmoid())
     s.addLoss(MSE())
     s.addOptimizer(RMSProp())
 
@@ -96,11 +96,13 @@ def testConvolution():
     # layer_grad = layer.incoming_acts.T.dot(layer.incoming_grad)
     layer_grad = layer.getLayerDerivatives()
 
-    epsilon = 1E-4
+    epsilon = 1E-5
     layer.weights[0][0][0] += epsilon
     up_error = iterate(s, X, y)
     layer.weights[0][0][0] -= 2*epsilon
     down_error = iterate(s, X, y)
+
+    print "ERRORS", up_error, down_error
 
     print "CONVOLUTION LAYER GRAD TEST:"
     print "numeric grad:  %11.8f" % ((up_error - down_error) / (2 * epsilon))[0][0]
