@@ -62,9 +62,9 @@ class Sequential:
                 epoch_err += minibatch_err
 
             if verbose==1:
-                print "Epoch #%d, Error: %.8f" % (i, epoch_err)
+                print "Epoch #%d, Error: %8.4f" % (i, epoch_err)
             elif verbose==2:
-                print "Epoch #%d, Error: %.8f, Accuracy: %.4f" % (i, epoch_err, accuracyBinary(self, X, y))
+                print "Epoch #%d, Error: %8.4f, Accuracy: %6.2f%%" % (i, epoch_err, accuracyBinary(self, X, y))
 
 
     def __str__(self):

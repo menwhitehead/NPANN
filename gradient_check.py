@@ -68,13 +68,13 @@ def testDense():
 def testConvolution():
     img_width = 17
     img_height = img_width
-    number_filters = 1
+    number_channels = 1
+    number_filters = 5
     number_classes = 1#number_filters*img_width*img_height
     batch_size = 1
+    epsilon = 1E-5
 
-    layer = Convolution(img_width, img_height, number_filters)
-
-
+    layer = Convolution(number_filters, img_width, img_height)
     s = Sequential()
     s.addLayer(layer)
     s.addLayer(Flatten())
@@ -84,30 +84,22 @@ def testConvolution():
     s.addLoss(MSE())
     s.addOptimizer(RMSProp())
 
-    X = np.random.rand(batch_size, number_filters, img_width, img_height)
+    X = np.random.rand(batch_size, number_channels, img_width, img_height)
     y = np.random.rand(batch_size, number_classes)
 
-    # print layer.weights
-    # print X
-    # print layer.npconvolve(X, layer.weights)
-
-
     first_error = iterate(s, X, y)
-    # layer_grad = layer.incoming_acts.T.dot(layer.incoming_grad)
     layer_grad = layer.getLayerDerivatives()
 
-    epsilon = 1E-5
-    layer.weights[0][0][0] += epsilon
-    up_error = iterate(s, X, y)
-    layer.weights[0][0][0] -= 2*epsilon
-    down_error = iterate(s, X, y)
-
-    print "ERRORS", up_error, down_error
-
     print "CONVOLUTION LAYER GRAD TEST:"
-    print "numeric grad:  %11.8f" % ((up_error - down_error) / (2 * epsilon))[0][0]
-    print "Backprop grad: %11.8f" % layer_grad[0][0][0]
-    print
+    for filter_index in range(number_filters):
+        layer.weights[filter_index][0][0] += epsilon
+        up_error = iterate(s, X, y)
+        layer.weights[filter_index][0][0] -= 2*epsilon
+        down_error = iterate(s, X, y)
+
+        print "Filter %d numeric grad:  %11.8f" % (filter_index, ((up_error - down_error) / (2 * epsilon))[0][0])
+        print "        Backprop grad:  %11.8f" % layer_grad[filter_index][0][0]
+        print
 
 if __name__=="__main__":
     testSigmoid()

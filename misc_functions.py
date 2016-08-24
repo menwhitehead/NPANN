@@ -224,7 +224,7 @@ def accuracy(model, X, y):
         if max_ind == tar_ind:
             correct += 1
 
-    return "\t*** Accuracy: %.4f ***" % (correct / float(dataset_size))
+    return "\t*** Accuracy: %.2f%% ***" % (100.0 * (correct / float(dataset_size)))
 
 
 
