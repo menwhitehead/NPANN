@@ -2,6 +2,7 @@ import numpy as np
 import h5py
 import math
 import random
+from PIL import Image
 
 DATASETS_DIR = "Datasets/"
 
@@ -79,6 +80,31 @@ def loadAdditionOneHot(number_problems=100, max_number=10):
         operand2 = random.randrange(max_number)
         xs.append(np.append(convertToOneHot(operand1, max_number), convertToOneHot(operand2, max_number)))
         ys.append(convertToOneHot(operand1 + operand2, max_number * 2))
+    X = np.array(xs)
+    y = np.array(ys)
+
+    return X, y
+
+
+def loadMultThenAdditionOneHot(number_problems=100, max_number=10):
+    xs = []
+    ys = []
+    for i in range(number_problems):
+        operand1 = random.randrange(max_number)
+        operand2 = random.randrange(max_number)
+        operand3 = random.randrange(max_number)
+        operator1 = random.randrange(2)
+        operator2 = 1 - operator1
+        if operator1 == 0:  # addition
+            solution = operand2 * operand3 + operand1
+        else:
+            solution = operand1 * operand2 + operand3
+        xs.append(np.append(convertToOneHot(operand1, max_number),
+                            convertToOneHot(operator1, 2),
+                            convertToOneHot(operand2, max_number),
+                            convertToOneHot(operator2, 2),
+                            convertToOneHot(operand3, max_number)))
+        ys.append(convertToOneHot(solution, max_number ** 2))
     X = np.array(xs)
     y = np.array(ys)
 
@@ -188,6 +214,20 @@ def loadMNIST2D():
     print "MNIST2D Dataset LOADED"
 
     return X, y
+
+
+def loadFaces():
+    size = 2429
+    f = h5py.File(DATASETS_DIR + "faces.hdf5", 'r')
+    X = f['data'][:size]
+
+    # maxes = X.max(axis=0)
+    # for i in range(len(maxes)):
+    #     if maxes[i] == 0:
+    #         maxes[i] = 0.1
+    # X *= 1/maxes
+
+    return X
 
 
 # Testing model accuracies

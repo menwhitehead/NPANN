@@ -27,7 +27,6 @@ class Sequential:
     def backward(self, curr_grad):
         for i in range(len(self.layers)-1, -1, -1):
             curr_grad = self.layers[i].backward(curr_grad)
-
         return curr_grad
 
     def update(self):
