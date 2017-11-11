@@ -17,11 +17,11 @@ accuracy_report_freq = 5
 minibatch_size = 200#len(X)
 dataset_size = len(X)
 vector_size = len(X[0])
-magnification = 10
+magnification = 20
 image_size = 19
 
 lr = 0.001
-number_hidden = 25
+number_hidden = 15
 discriminator = Sequential()
 discriminator.addLayer(Dense(vector_size, number_hidden))
 discriminator.addLayer(Sigmoid())
@@ -31,7 +31,7 @@ discriminator.addLoss(MSE())
 discriminator.addOptimizer(RMSProp(learning_rate = lr))
 
 lr = 0.001
-number_hidden = 25
+number_hidden = 15
 generator = Sequential()
 generator.addLayer(Dense(vector_size, number_hidden))
 generator.addLayer(Sigmoid())
