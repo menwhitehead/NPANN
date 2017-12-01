@@ -177,7 +177,7 @@ def loadBreastCancerTanh():
 
 
 def loadMNIST():
-    size = 1000
+    size = 10000
     f = h5py.File(DATASETS_DIR + "mnist.hdf5", 'r')
     X = f['x_train'][:size]
 
@@ -220,15 +220,18 @@ def loadFaces():
     size = 2429
     f = h5py.File(DATASETS_DIR + "faces.hdf5", 'r')
     X = f['data'][:size]
-
-    # maxes = X.max(axis=0)
-    # for i in range(len(maxes)):
-    #     if maxes[i] == 0:
-    #         maxes[i] = 0.1
-    # X *= 1/maxes
-
     return X
 
+def loadWatches():
+    #size = 2429
+    f = h5py.File(DATASETS_DIR + "watches.hdf5", 'r')
+    X = f['data'][:]
+    return X
+
+def loadDogs():
+    f = h5py.File(DATASETS_DIR + "dogs.hdf5", 'r')
+    X = f['data'][:]
+    return X
 
 # Testing model accuracies
 def accuracyBinary(model, X, y, train=False):

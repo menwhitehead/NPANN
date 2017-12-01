@@ -11,17 +11,19 @@ import time
 
 #X, y = loadMNIST()
 X = loadFaces()
+# X = loadWatches()
+# X = loadDogs()
 
 number_epochs = 1000000
 accuracy_report_freq = 5
 minibatch_size = 200#len(X)
 dataset_size = len(X)
 vector_size = len(X[0])
-magnification = 20
-image_size = 19
+magnification = 10
+image_size = int(math.sqrt(vector_size))  # ONLY SQUARE IMAGES!!!!
 
 lr = 0.001
-number_hidden = 15
+number_hidden = 35
 discriminator = Sequential()
 discriminator.addLayer(Dense(vector_size, number_hidden))
 discriminator.addLayer(Sigmoid())
@@ -31,7 +33,7 @@ discriminator.addLoss(MSE())
 discriminator.addOptimizer(RMSProp(learning_rate = lr))
 
 lr = 0.001
-number_hidden = 15
+number_hidden = 35
 generator = Sequential()
 generator.addLayer(Dense(vector_size, number_hidden))
 generator.addLayer(Sigmoid())
