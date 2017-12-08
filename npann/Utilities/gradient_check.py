@@ -1,11 +1,12 @@
-from misc_functions import *
-from Models.Sequential import Sequential
-from Layers.Dense import Dense
-from Layers.Flatten import Flatten
-from Layers.Convolution import Convolution
-from Layers.Activations.Sigmoid import Sigmoid
-from Optimizers.RMSProp import RMSProp
-from Losses.MSE import MSE
+# from misc_functions import *
+import numpy as np
+from npann.Models.Sequential import Sequential
+from npann.Layers.Dense import Dense
+from npann.Layers.Flatten import Flatten
+from npann.Layers.Convolution import Convolution
+from npann.Layers.Activations.Sigmoid import Sigmoid
+from npann.Optimizers.RMSProp import RMSProp
+from npann.Losses.MSE import MSE
 
 np.random.seed(42)
 

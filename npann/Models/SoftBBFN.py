@@ -1,6 +1,7 @@
+from npann.Utilities.misc_functions import *
 import numpy as np
 import time
-from misc_functions import *
+
 
 # Building block function network
 class SoftBBFN:

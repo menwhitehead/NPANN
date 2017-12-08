@@ -1,10 +1,10 @@
-from misc_functions import *
-from Models.SoftBBFN import SoftBBFN
-from Layers.RecurrentDense import RecurrentDense
-from Layers.Activations.Relu import Relu
-from Layers.Activations.Sigmoid import Sigmoid
-from Losses.MSE import MSE
-from Optimizers.RMSProp import RMSProp
+from npann.Utilities.misc_functions import *
+from npann.Models.SoftBBFN import SoftBBFN
+from npann.Layers.Recurrent.DenseRecurrent import DenseRecurrent
+from npann.Layers.Activations.Relu import Relu
+from npann.Layers.Activations.Sigmoid import Sigmoid
+from npann.Losses.MSE import MSE
+from npann.Optimizers.RMSProp import RMSProp
 
 # get an array with two 1-hot operands (representing integers) packed in
 # add 'em and return a 1-hot result
@@ -59,11 +59,11 @@ if __name__ == "__main__":
 
     print "SIZES:", applying_input_size, hidden_input_size, output_input_size
 
-    applying = RecurrentDense(applying_input_size, applying_output_size)
+    applying = DenseRecurrent(applying_input_size, applying_output_size)
     applying_act = Sigmoid()
-    hidden = RecurrentDense(hidden_input_size, hidden_size)
+    hidden = DenseRecurrent(hidden_input_size, hidden_size)
     hidden_act = Sigmoid()
-    output = RecurrentDense(hidden_size, 2*operand_size)
+    output = DenseRecurrent(hidden_size, 2*operand_size)
     output_act = Sigmoid()
 
     model = SoftBBFN(applying, applying_act, hidden, hidden_act, output, output_act, function_library, sequence_length=2)

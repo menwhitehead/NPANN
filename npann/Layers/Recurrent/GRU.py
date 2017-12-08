@@ -1,6 +1,6 @@
-from misc_functions import *
+from npann.Utilities.misc_functions import *
 from ..Layer import Layer
-from ..RecurrentDense import RecurrentDense
+from DenseRecurrent import DenseRecurrent
 from ..Activations.Sigmoid import Sigmoid
 from ..Activations.Tanh import Tanh
 
@@ -16,11 +16,11 @@ class GRU(Layer):
         self.number_incoming = number_incoming
         self.number_hidden = number_hidden
 
-        self.reset_layer = RecurrentDense(number_incoming + number_hidden, number_hidden)
+        self.reset_layer = DenseRecurrent(number_incoming + number_hidden, number_hidden)
         self.reset_act_layer = Sigmoid()
-        self.update_layer = RecurrentDense(number_incoming + number_hidden, number_hidden)
+        self.update_layer = DenseRecurrent(number_incoming + number_hidden, number_hidden)
         self.update_act_layer = Sigmoid()
-        self.hidden_layer = RecurrentDense(number_incoming + number_hidden, number_hidden)
+        self.hidden_layer = DenseRecurrent(number_incoming + number_hidden, number_hidden)
         self.hidden_act_layer = Tanh()
 
         self.backprop_limit = min(backprop_limit, self.sequence_length)

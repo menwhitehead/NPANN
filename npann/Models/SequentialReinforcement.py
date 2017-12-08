@@ -1,5 +1,5 @@
 import numpy as np
-from misc_functions import accuracy, accuracyBinary
+from npann.Utilities.misc_functions import accuracy, accuracyBinary
 from Sequential import Sequential
 
 class SequentialReinforcement(Sequential):

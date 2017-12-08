@@ -1,10 +1,9 @@
-from misc_functions import *
-from Layers.Recurrent.LSTM import LSTM
-from Layers.Activations.Tanh import Tanh
-from Losses.MSE import MSE
-from Optimizers.SimpleGradientDescent import SimpleGradientDescent
-from Optimizers.RMSProp import RMSProp
-
+from npann.Utilities.misc_functions import *
+from npann.Layers.Recurrent.LSTM import LSTM
+from npann.Layers.Activations.Tanh import Tanh
+from npann.Losses.MSE import MSE
+from npann.Optimizers.SimpleGradientDescent import SimpleGradientDescent
+from npann.Optimizers.RMSProp import RMSProp
 import struct
 
 def floatToBits(f):

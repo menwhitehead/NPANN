@@ -1,14 +1,14 @@
-from misc_functions import *
+from npann.Utilities.misc_functions import *
 from Layer import Layer
 
 
 class FiniteDifference(Layer):
-    
+
     def __init__(self, number_incoming, number_outgoing, weight_init='glorot_uniform'):
         self.weights = weight_inits[weight_init](number_incoming, number_outgoing)
         self.prev_update = 0.0
         self.altered_table = []  # store history of past actions and the results
-        self.unaltered_table = [] # store 
+        self.unaltered_table = [] # store
         self.max_table_size = 100
         self.alter_mode = True  # True means to use an altered set of weights...this flips each call
         self.learning_rate = 0.99
@@ -16,11 +16,11 @@ class FiniteDifference(Layer):
     def reset(self):
         self.altered_table = []
         self.unaltered_table = []
-    
+
     def forward(self, x, train=True):
         self.incoming_acts = x
 
-        if self.alter_mode:        
+        if self.alter_mode:
             ws = np.copy(self.weights)  # Make a fresh copy of the weights
             max_delta = 1.0
             deltas = max_delta - (2*max_delta * np.random.rand(self.weights.shape[0], self.weights.shape[1]))
@@ -29,16 +29,16 @@ class FiniteDifference(Layer):
                 self.altered_table.append(deltas)  # add the chosen tiny moves to the history
         else:
             ws = self.weights
-        
+
         self.outgoing_acts = x.dot(ws)
-        
+
         return self.outgoing_acts
-    
-    
+
+
     def backward(self, incoming_grad):
         self.incoming_grad = incoming_grad
         self.outgoing_grad = self.incoming_grad
-        
+
         # UPdate table with incoming grad info
         #reward = 1.0/incoming_grad
         #reward = -incoming_grad
@@ -63,7 +63,7 @@ class FiniteDifference(Layer):
             self.unaltered_table.append(rewards)
 
         return self.outgoing_grad.dot(self.weights.T)
-        
+
     def update(self, optimizer):
         # optimizer is ignored! :P
         self.alter_mode = not self.alter_mode
@@ -76,13 +76,13 @@ class FiniteDifference(Layer):
                 grad_delta = altered_grads - unaltered_grads
                 grad_deltas.append(np.mean(grad_delta))
                 theta_deltas.append(np.ndarray.flatten(altered_deltas))
-            
+
             grad_deltas = np.array(grad_deltas)
             theta_deltas = np.array(theta_deltas)
-            
+
             weight_update = np.linalg.lstsq(theta_deltas, grad_deltas)[0]
             resized_update = np.reshape(weight_update, self.weights.shape)
-            
+
             self.weights += self.learning_rate * resized_update
             if self.learning_rate > 0.001:
                 self.learning_rate *= 0.99

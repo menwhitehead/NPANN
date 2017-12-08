@@ -1,10 +1,10 @@
-from misc_functions import *
-from Models.Sequential import Sequential
-from Layers.Dense import Dense
-from Layers.Dropout import Dropout
-from Losses.MSE import MSE
-from Layers.Activations.Relu import Relu
-from Optimizers.RMSProp import RMSProp
+from npann.Utilities.misc_functions import *
+from npann.Models.Sequential import Sequential
+from npann.Layers.Dense import Dense
+from npann.Layers.Dropout import Dropout
+from npann.Losses.MSE import MSE
+from npann.Layers.Activations.Relu import Relu
+from npann.Optimizers.RMSProp import RMSProp
 
 if __name__ == "__main__":
     lr = 0.005

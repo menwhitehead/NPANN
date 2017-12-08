@@ -1,10 +1,10 @@
-from misc_functions import *
-from Models.Sequential import Sequential
-from Layers.Dense import Dense
-from Layers.Activations.Sigmoid import Sigmoid
-from Losses.CategoricalCrossEntropy import CategoricalCrossEntropy
-from Losses.MSE import MSE
-from Optimizers.RMSProp import RMSProp
+from npann.Utilities.misc_functions import *
+from npann.Models.Sequential import Sequential
+from npann.Layers.Dense import Dense
+from npann.Layers.Activations.Sigmoid import Sigmoid
+from npann.Losses.CategoricalCrossEntropy import CategoricalCrossEntropy
+from npann.Losses.MSE import MSE
+from npann.Optimizers.RMSProp import RMSProp
 import cv2
 import time
 
@@ -103,4 +103,3 @@ for epoch in range(number_epochs):
 
         # Visualize the generated image for seed value
         visualizeOne()
-

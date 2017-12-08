@@ -1,11 +1,11 @@
-from misc_functions import *
-from Models.Sequential import Sequential
-from Layers.Dense import Dense
-from Layers.Convolution import Convolution
-from Layers.Flatten import Flatten
-from Layers.Activations.Sigmoid import Sigmoid
-from Losses.CategoricalCrossEntropy import CategoricalCrossEntropy
-from Optimizers.RMSProp import RMSProp
+from npann.Utilities.misc_functions import *
+from npann.Models.Sequential import Sequential
+from npann.Layers.Dense import Dense
+from npann.Layers.Convolution import Convolution
+from npann.Layers.Flatten import Flatten
+from npann.Layers.Activations.Sigmoid import Sigmoid
+from npann.Losses.CategoricalCrossEntropy import CategoricalCrossEntropy
+from npann.Optimizers.RMSProp import RMSProp
 
 if __name__ == "__main__":
     lr = 1E-4

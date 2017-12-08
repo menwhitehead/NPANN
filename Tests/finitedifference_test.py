@@ -1,10 +1,10 @@
-from misc_functions import *
-from Layers.Dense import Dense
-from Layers.FiniteDifference import FiniteDifference
-from Layers.Activations.Sigmoid import Sigmoid
-from Models.Sequential import Sequential
-from Optimizers.RMSProp import RMSProp
-from Losses.MSE import MSE
+from npann.Utilities.misc_functions import *
+from npann.Layers.Dense import Dense
+from npann.Layers.FiniteDifference import FiniteDifference
+from npann.Layers.Activations.Sigmoid import Sigmoid
+from npann.Models.Sequential import Sequential
+from npann.Optimizers.RMSProp import RMSProp
+from npann.Losses.MSE import MSE
 
 
 if __name__ == "__main__":
@@ -20,4 +20,3 @@ if __name__ == "__main__":
     number_epochs = 10000
 
     ann.train(X, y, minibatch_size, number_epochs, verbose=2)
-    

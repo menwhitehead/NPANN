@@ -1,14 +1,12 @@
-from misc_functions import *
-from Layers.Recurrent.Recurrent import Recurrent
-from Layers.Dense import Dense
-
-from Layers.Activations.Tanh import Tanh
-from Layers.Activations.Softmax import Softmax
-from Layers.Activations.Sigmoid import Sigmoid
-
-from Losses.MSE import MSE
-from Optimizers.SimpleGradientDescent import SimpleGradientDescent
-from Optimizers.RMSProp import RMSProp
+from npann.Utilities.misc_functions import *
+from npann.Layers.Recurrent.Recurrent import Recurrent
+from npann.Layers.Dense import Dense
+from npann.Layers.Activations.Tanh import Tanh
+from npann.Layers.Activations.Softmax import Softmax
+from npann.Layers.Activations.Sigmoid import Sigmoid
+from npann.Losses.MSE import MSE
+from npann.Optimizers.SimpleGradientDescent import SimpleGradientDescent
+from npann.Optimizers.RMSProp import RMSProp
 import string
 
 ALPHABET_LENGTH = 27

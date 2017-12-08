@@ -1,14 +1,14 @@
-from misc_functions import *
-from Models.Sequential import Sequential
-from Layers.Dense import Dense
-from Layers.Dropout import Dropout
-from Layers.Activations.Tanh import Tanh
-from Layers.Activations.Sigmoid import Sigmoid
-from Layers.Activations.Relu import Relu
-from Losses.MSE import MSE
-from Optimizers.SimpleGradientDescent import SimpleGradientDescent
-from Optimizers.AdaGrad import AdaGrad
-from Optimizers.RMSProp import RMSProp
+from npann.Utilities.misc_functions import *
+from npann.Models.Sequential import Sequential
+from npann.Layers.Dense import Dense
+from npann.Layers.Dropout import Dropout
+from npann.Layers.Activations.Tanh import Tanh
+from npann.Layers.Activations.Sigmoid import Sigmoid
+from npann.Layers.Activations.Relu import Relu
+from npann.Losses.MSE import MSE
+from npann.Optimizers.SimpleGradientDescent import SimpleGradientDescent
+from npann.Optimizers.AdaGrad import AdaGrad
+from npann.Optimizers.RMSProp import RMSProp
 
 if __name__ == "__main__":
     lr = 0.01

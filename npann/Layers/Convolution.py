@@ -1,4 +1,4 @@
-from misc_functions import *
+from npann.Utilities.misc_functions import *
 from scipy.signal import convolve2d, correlate2d
 from Layer import Layer
 

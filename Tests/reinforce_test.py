@@ -1,11 +1,11 @@
-from misc_functions import *
-from Layers.Dense import Dense
-from Layers.Reinforce import Reinforce
-from Layers.Activations.Relu import Relu
-from Layers.Activations.Tanh import Tanh
-from Models.SequentialReinforcement import SequentialReinforcement
-from Optimizers.RMSProp import RMSProp
-from Losses.MSE import MSE
+from npann.Utilities.misc_functions import *
+from npann.Layers.Dense import Dense
+from npann.Layers.Reinforce import Reinforce
+from npann.Layers.Activations.Relu import Relu
+from npann.Layers.Activations.Tanh import Tanh
+from npann.Models.SequentialReinforcement import SequentialReinforcement
+from npann.Optimizers.RMSProp import RMSProp
+from npann.Losses.MSE import MSE
 
 def getReward(ann, X, y):
     output = ann.forward(X)

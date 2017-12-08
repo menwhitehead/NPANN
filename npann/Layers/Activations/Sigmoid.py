@@ -1,4 +1,4 @@
-from misc_functions import *
+from npann.Utilities.misc_functions import *
 from ..Layer import Layer
 
 class Sigmoid(Layer):

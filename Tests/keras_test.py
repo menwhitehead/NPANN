@@ -3,7 +3,7 @@ import numpy as np
 
 import h5py
 import random
-from npann_functions import *
+from npann.Utilities.misc_functions import *
 
 from keras.datasets import mnist
 from keras.models import Sequential
@@ -33,36 +33,31 @@ def createModelMNIST():
     model.add(Dense(10))
     model.add(Activation('softmax'))
     return model
-        
+
 if __name__ == "__main__":
-    
+
     X, y = loadXOR() #loadMNIST()
-    
+
     minibatch_size = 4
 
     model = createModelXOR()
-    
+
     model.compile(#loss='categorical_crossentropy',
               loss='mse',
               #optimizer=RMSprop())
               optimizer=SGD(lr=0.9, momentum=0.0, nesterov=False, decay=0.0))
               #metrics=['accuracy'])
-    
+
     # for layer in model.layers:
     #     weights = layer.get_weights()
     #     print weights
     #sys.exit(1)
-    
+
     #micro = X[:1]
     #print model.predict(micro, batch_size=1, verbose=1)
-    
-    history = model.fit(X, y, 
+
+    history = model.fit(X, y,
                 batch_size=minibatch_size, nb_epoch=2500,
                 verbose=1)
-    
+
     print model.predict(X, batch_size=1, verbose=1)
-
-
-    
-    
-    

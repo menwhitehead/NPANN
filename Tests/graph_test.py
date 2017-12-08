@@ -1,13 +1,12 @@
-from misc_functions import *
-from Models.Graph import Graph
-from Models.Sequential import Sequential
-from Layers.Dense import Dense
-from Layers.Merge import Merge
-from Layers.Dropout import Dropout
-from Layers.Activations.Tanh import Tanh
-
-from Losses.MSE import MSE
-from Optimizers.RMSProp import RMSProp
+from npann.Utilities.misc_functions import *
+from npann.Models.Graph import Graph
+from npann.Models.Sequential import Sequential
+from npann.Layers.Dense import Dense
+from npann.Layers.Merge import Merge
+from npann.Layers.Dropout import Dropout
+from npann.Layers.Activations.Tanh import Tanh
+from npann.Losses.MSE import MSE
+from npann.Optimizers.RMSProp import RMSProp
 
 #np.random.seed(42)
 
@@ -15,7 +14,7 @@ def graphTest():
     ann = Graph()
     ann.addLayer("dense1", Dense(9, 22), ["input1"])
     ann.addLayer("act1", Tanh(), ["dense1"])
-    
+
     ann.addLayer("dense2a", Dense(22, 12), ["act1"])
     ann.addLayer("act2a", Tanh(), ["dense2a"])
 
@@ -25,7 +24,7 @@ def graphTest():
     ann.addLayer("merger", Merge(24), ["act2a", "act2b"])
     # ann.addLayer("merger", Merge(), ["dense1"])
     # ann.addLayer("dense3", Dense(3, 1), ["merger"], is_output=True)
-    
+
     ann.addLayer("dense3", Dense(24, 1), ["merger"])
     ann.addLayer("act3", Tanh(), ["dense3"], is_output=True)
     ann.addLoss(MSE())
@@ -57,4 +56,4 @@ def comparisonSequentialTest():
 if __name__ == "__main__":
     # comparisonSequentialTest()
     graphTest()
-    # 
+    #
