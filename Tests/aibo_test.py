@@ -1,10 +1,10 @@
-from misc_functions import *
-from Layers.Dense import Dense
-from Layers.AiboPG import *
-from Layers.Activations.Sigmoid import Sigmoid
-from Models.Sequential import Sequential
-from Optimizers.RMSProp import RMSProp
-from Losses.MSE import MSE
+from npann.Utilities.misc_functions import *
+from npann.Layers.Dense import Dense
+from npann.Layers.AiboPG import *
+from npann.Layers.Activations.Sigmoid import Sigmoid
+from npann.Models.Sequential import Sequential
+from npann.Optimizers.RMSProp import RMSProp
+from npann.Losses.MSE import MSE
 
 if __name__ == "__main__":
     lr = 0.01
@@ -19,5 +19,5 @@ if __name__ == "__main__":
     X, y = loadBreastCancer() #loadXOR()
     minibatch_size = 10
     number_epochs = 10000
-    
+
     ann.train(X, y, minibatch_size, number_epochs, verbose=2)
